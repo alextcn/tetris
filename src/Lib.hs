@@ -1,22 +1,15 @@
-module Lib
-    ( someFunc
-    , drawText
-    ) where
+module Lib ( runGame
+              ) where
 
 import Graphics.Gloss
 
-someFunc :: IO ()
-someFunc = putStrLn "hello world"
 
-drawText = display
-        (InWindow
-               "Hello World"     -- window title
-                (400, 150)       -- window size
-                (10, 10))        -- window position
-        white                    -- background color
-        picture                  -- picture to display
-
-picture
-        = Translate (-170) (-20) -- shift the text to the middle of the window
-        $ Scale 0.5 0.5          -- display it half the original size
-        $ Text "Hello World"     -- text to display
+-- | Display the last event received as text.
+runGame
+ = play (InWindow "GameEvent" (700, 100) (10, 10))
+        white
+        100
+        ""
+        (\str     -> Translate (-340) 0 $ Scale 0.1 0.1 $ Text str)
+        (\event _ -> show event)
+        (\_ world -> world)
