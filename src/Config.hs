@@ -1,5 +1,27 @@
 module Config where
 
+
+data AppConfig = AppConfig
+    { _windowWidth :: Int
+    , _windowHeight :: Int
+    , _gameWidth :: Float
+    , _gameHeight :: Float
+    , _blockSize :: Float
+    , _cupBlocksWidth :: Int
+    , _cupBlocksHeight :: Int
+    , _cupWidth :: Float
+    , _cupHeight :: Float
+    , _windowPosition :: (Float, Float)
+    , _gamePosition :: (Float, Float)
+    , _cupPosition :: (Float, Float)
+    }
+
+-- TODO: write normalize contruct function
+defaultAppConfig :: AppConfig
+defaultAppConfig =
+    AppConfig windowWidth windowWidth gameWidth gameHeight
+              blockSize 24 40 cupWidth cupHeight windowPosition gamePosition cupPosition
+
 -- ALL THE GLOBAL PARAMS STACKED IN HERE
 
 ------------------ Size ------------------
@@ -35,7 +57,7 @@ blockSize                 = 10
 ------------------ Position ------------------
 
 -- | Window position relates to screen
-windowPosition :: (Int, Int)
+windowPosition :: (Float, Float)
 windowPosition            = (20, 20)
 
 -- | Game position relates to window

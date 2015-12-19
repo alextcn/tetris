@@ -27,6 +27,14 @@ cube
            , Block (blockSize, blockSize) blockSize
            , Block (0, blockSize) blockSize ]
 
+
+-- | Translates a figure to Config.startPosition
+toStart :: Figure -> Figure
+toStart (Figure bs)
+ = Figure (map (\(Block (x,y) sz) -> Block (x + sx, y + sy) sz) bs)
+   where
+     (sx, sy) = startPosition
+
 -- | Shifts figure one block left
 shiftLeft :: Figure -> Figure
 shiftLeft (Figure bs)
@@ -35,16 +43,16 @@ shiftLeft (Figure bs)
 -- | Shifts figure one block right
 shiftRight :: Figure -> Figure
 shiftRight (Figure bs)
-  = Figure (map (\z -> deposeBlock z (blockSize) 0) bs) 
+  = Figure (map (\z -> deposeBlock z (blockSize) 0) bs)
 
 -- | Shifts figure one block down (used for falling)
 shiftDown :: Figure -> Figure
 shiftDown (Figure bs)
-  = Figure (map (\z -> deposeBlock z 0 (-blockSize)) bs) 
+  = Figure (map (\z -> deposeBlock z 0 (-blockSize)) bs)
 
--- | Deposes one particular block 
+-- | Deposes one particular block
 deposeBlock :: Block -> Float -> Float -> Block
-deposeBlock (Block (x, y) sz) offX offY 
+deposeBlock (Block (x, y) sz) offX offY
   = Block (x + offX, y + offY) sz
 
 -- | Retunrs True when figure reaches the bommom

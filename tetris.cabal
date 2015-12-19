@@ -15,9 +15,10 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Config, Figures, World
+  exposed-modules:     Config, Figures, World, Drawing, Game
   build-depends:       base >= 4.7 && < 5
                      , gloss
+                     , mtl
   default-language:    Haskell2010
 
 executable tetris-exe

@@ -14,16 +14,8 @@ data TetrisGame = Game
 
 -- | Initial state of the game
 initialState :: TetrisGame
-initialState 
+initialState
   = Game (toStart cube) (toStart cube) [] True
-
--- | Translates a figure to Config.startPosition
--- Should 
-toStart :: Figure -> Figure
-toStart (Figure bs)
-  = Figure (map (\(Block (x,y) sz) -> Block (x + sx, y + sy) sz) bs)
-    where
-      (sx, sy) = startPosition
 
 -- | Sets the currently falling figure from nextFigure
 nextFigureGame :: TetrisGame -> TetrisGame
