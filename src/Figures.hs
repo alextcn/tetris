@@ -19,6 +19,25 @@ data Figure = Figure
             { blocks :: [Block]
             } deriving (Show)
 
+
+-- type Block = (Int, Int)
+--
+-- class Figurable a where
+--   rotate :: a -> a
+--
+-- data Figure = Cube [Block] | Tank [Block]
+--
+-- instance Figurable Figure where
+--   rotate :: Figure -> Figure
+--   rotate (Cube bs) = Cube bs
+--
+--
+-- createCube :: Cube [NewBlock]
+-- createCube = undefined
+--
+-- createTank :: Tank [Block]
+-- createTank = undefined
+
 -- | Constructor for a cube figure
 cube :: Figure
 cube

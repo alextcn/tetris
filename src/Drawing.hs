@@ -29,6 +29,9 @@ drawFigure :: Figure -> Picture
 drawFigure (Figure blocks)
         = Pictures $ map (\x -> drawBlock x) blocks
 
+-- drawFigure :: Position -> Figure -> State AppConfig Picture
+-- drawFigure = undefined
+
 -- | Draws a single dot in the center of the screen.
 --    Implemented for debug purposes.
 drawCenterScreen :: Picture

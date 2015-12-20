@@ -3,6 +3,23 @@ module World where
 import Config
 import Figures
 
+-- type Position = (Int, Int)
+--
+-- data Hardness = Easy | Medium | Hard
+--
+-- -- | Data represents the state of the Tetris game
+-- data TetrisGame = Game
+--   { fallingFigure   :: Figure
+--   , fallingPosition :: Position
+--   , width           :: Int
+--   , height          :: Int
+--   , nextFigures     :: [Figure]
+--   , falledBlocks    :: [Block]
+--   , grid            :: [[Maybe Color]]
+--   , hardness        :: Hardness
+--   , isPause         :: Bool
+--   } deriving (Show)
+
 -- | Data represents the state of the Tetris game
 data TetrisGame = Game
   { fallingFigure :: Figure
