@@ -9,6 +9,7 @@ data AppConfig = AppConfig
     , _blockSize :: Float
     , _cupBlocksWidth :: Int
     , _cupBlocksHeight :: Int
+    , _startPosition :: (Int, Int)
     , _cupWidth :: Float
     , _cupHeight :: Float
     , _windowPosition :: (Float, Float)
@@ -20,7 +21,7 @@ data AppConfig = AppConfig
 defaultAppConfig :: AppConfig
 defaultAppConfig =
     AppConfig windowWidth windowWidth gameWidth gameHeight
-              blockSize 24 40 cupWidth cupHeight windowPosition gamePosition cupPosition
+              blockSize 24 40 (12, 40) cupWidth cupHeight windowPosition gamePosition cupPosition
 
 -- ALL THE GLOBAL PARAMS STACKED IN HERE
 

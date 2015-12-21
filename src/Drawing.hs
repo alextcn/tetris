@@ -12,22 +12,11 @@ import Graphics.Gloss.Interface.Pure.Game
 
 -- | Draws a one basic block and its contour
 drawBlock :: Block -> Picture
-drawBlock (Block (x,y) size)
-    = Pictures [ Color (makeColorI 200 200 200 255)
-                 $ Polygon [ (x, y)
-                           , (x + size, y)
-                           , (x + size, y + size)
-                           , (x , y + size) ]
-               , Color black
-                 $ lineLoop [ (x, y)
-                            , (x + size, y)
-                            , (x + size, y + size)
-                            , (x , y + size) ] ]
+drawBlock = undefined
 
 -- | Draws entire figure
 drawFigure :: Figure -> Picture
-drawFigure (Figure blocks)
-        = Pictures $ map (\x -> drawBlock x) blocks
+drawFigure = undefined
 
 -- drawFigure :: Position -> Figure -> State AppConfig Picture
 -- drawFigure = undefined

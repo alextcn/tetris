@@ -14,7 +14,7 @@ runGame = play
         window       -- Display mode.
         background   -- Background color.
         fps          -- Number of simulation steps to take for each second of real time.
-        initialState -- The initial world.
+        initState    -- The initial world.
         render       -- A function to convert the world a picture.
         handler      -- A function to handle input events.
         update       -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
@@ -31,9 +31,13 @@ background = (makeColorI 152 152 152 255)
 fps :: Int
 fps = 3
 
+initState :: TetrisGame
+initState = undefined
+
 -- -- | Render function for game
 render :: TetrisGame -> Picture
-render game = fst $ runState (drawWindow $ fallingFigure game) defaultAppConfig
+render = undefined
+-- render game = fst $ runState (drawWindow $ fallingFigure game) defaultAppConfig
 
 -- | A function to handle input events.
 handler :: Event -> TetrisGame -> TetrisGame
@@ -55,7 +59,4 @@ handler _ game = game
 
 -- | Updates game state by shifting current falling figure down
 update :: Float -> TetrisGame -> TetrisGame
-update _ game
-  | isPause game = game
-  | fell $ fallingFigure game = nextFigureGame game
-  | otherwise = shiftDownGame game
+update _ game = undefined

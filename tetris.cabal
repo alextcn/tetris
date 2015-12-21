@@ -19,6 +19,9 @@ library
   build-depends:       base >= 4.7 && < 5
                      , gloss
                      , mtl
+                     , containers
+                     , array
+                     , random
   default-language:    Haskell2010
 
 executable tetris-exe

@@ -1,92 +1,22 @@
 module Figures where
 
 import Config
+import qualified Data.Map as Map
 
 -- IMPLEMENTS FIGURES AND FUNCTIONS TO WORK WITH THEM
 
 -- | 2D position on the screen.
-type Position = (Float, Float)
+type Position = (Int, Int)
 
 -- | Width & Heigth of the block
 type Size = Float
 
--- | Block is a unit of figure
-data Block = Block Position Size    -- DO we need Size in here?
-              deriving (Show)
+type Block = (Int, Int)
+data FigureType = Cube | Tank
+data Rotation = Up1 | Right1 | Down1 | Left1
+data Figure = Figure FigureType [Block] Rotation
 
--- | Figure is a basic element of the game
-data Figure = Figure
-            { blocks :: [Block]
-            } deriving (Show)
+type AllFigures = Map.Map (FigureType, Rotation) Figure
 
-
--- type Block = (Int, Int)
---
--- class Figurable a where
---   rotate :: a -> a
---
--- data Figure = Cube [Block] | Tank [Block]
---
--- instance Figurable Figure where
---   rotate :: Figure -> Figure
---   rotate (Cube bs) = Cube bs
---
---
--- createCube :: Cube [NewBlock]
--- createCube = undefined
---
--- createTank :: Tank [Block]
--- createTank = undefined
-
--- | Constructor for a cube figure
-cube :: Figure
-cube
-  = Figure [ Block (0, 0) blockSize
-           , Block (blockSize, 0) blockSize
-           , Block (blockSize, blockSize) blockSize
-           , Block (0, blockSize) blockSize ]
-
-
--- | Translates a figure to Config.startPosition
-toStart :: Figure -> Figure
-toStart (Figure bs)
- = Figure (map (\(Block (x,y) sz) -> Block (x + sx, y + sy) sz) bs)
-   where
-     (sx, sy) = startPosition
-
--- | Shifts figure one block left
-shiftLeft :: Figure -> Figure
-shiftLeft (Figure bs)
-  = Figure (map (\z -> deposeBlock z (-blockSize) 0) bs)
-
--- | Shifts figure one block right
-shiftRight :: Figure -> Figure
-shiftRight (Figure bs)
-  = Figure (map (\z -> deposeBlock z (blockSize) 0) bs)
-
--- | Shifts figure one block down (used for falling)
-shiftDown :: Figure -> Figure
-shiftDown (Figure bs)
-  = Figure (map (\z -> deposeBlock z 0 (-blockSize)) bs)
-
--- | Deposes one particular block
-deposeBlock :: Block -> Float -> Float -> Block
-deposeBlock (Block (x, y) sz) offX offY
-  = Block (x + offX, y + offY) sz
-
--- | Retunrs True when figure reaches the bommom
---    of the cup
-fell :: Figure -> Bool
-fell (Figure bs) = foldl _fell False bs
-  where
-    _fell True _ = True
-    _fell False (Block (_, y) _) = y <= bottom
-    (x, bottom) = cupBottomLeft
-
--- | Returns True when figure is near left border
-blockedFromLeft :: Figure -> Bool
-blockedFromLeft (Figure bs) = False
-
--- | Returns True when figure is near right border
-blockedFromRight :: Figure -> Bool
-blockedFromRight (Figure bs) = False
+initFigures :: AllFigures
+initFigures = undefined
