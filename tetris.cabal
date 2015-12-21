@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Config, Figures, World, Drawing, Game
+  exposed-modules:     Config, Figures, World, Drawing, Game, Util
   build-depends:       base >= 4.7 && < 5
                      , gloss
                      , mtl

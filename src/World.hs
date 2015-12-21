@@ -41,10 +41,6 @@ initGrid w h = listArray ((0,0), (w-1, h-1)) (repeat False)
 randomFigures :: (RandomGen g) => g -> [Figure]
 randomFigures = undefined
 
--- | Start position of new figure
-startPosition :: Position
-startPosition = undefined
-
 -- | Sets the currently falling figure from nextFigure
 nextFigureGame :: TetrisGame -> TetrisGame
 nextFigureGame = undefined

@@ -3,18 +3,12 @@ module Figures where
 import Config
 import qualified Data.Map as Map
 
--- IMPLEMENTS FIGURES AND FUNCTIONS TO WORK WITH THEM
-
--- | 2D position on the screen.
-type Position = (Int, Int)
-
--- | Width & Heigth of the block
-type Size = Float
+-- Tetris figures
 
 type Block = (Int, Int)
 data FigureType = Cube | Tank
-data Rotation = Up1 | Right1 | Down1 | Left1
-data Figure = Figure FigureType [Block] Rotation
+data Rotation = D1 | D2 | D3 | D4
+data Figure = Figure FigureType Rotation [Block]
 
 type AllFigures = Map.Map (FigureType, Rotation) Figure
 

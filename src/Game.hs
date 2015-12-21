@@ -6,6 +6,7 @@ import Drawing
 import Figures
 
 import Control.Monad.State
+import Control.Monad.Reader
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
@@ -34,10 +35,13 @@ fps = 3
 initState :: TetrisGame
 initState = undefined
 
--- -- | Render function for game
+-- | Render function for game
 render :: TetrisGame -> Picture
-render = undefined
--- render game = fst $ runState (drawWindow $ fallingFigure game) defaultAppConfig
+render game = runReader (evalStateT drawWindow game) defaultAppConfig
+
+-- | Updates game state by shifting current falling figure down
+update :: Float -> TetrisGame -> TetrisGame
+update _ game = undefined
 
 -- | A function to handle input events.
 handler :: Event -> TetrisGame -> TetrisGame
@@ -56,7 +60,3 @@ handler (EventKey (SpecialKey KeyRight) Down _ _) game
 
 -- | Handles the rest input
 handler _ game = game
-
--- | Updates game state by shifting current falling figure down
-update :: Float -> TetrisGame -> TetrisGame
-update _ game = undefined
