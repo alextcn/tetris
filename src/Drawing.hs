@@ -25,7 +25,7 @@ drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
 drawBlock = undefined
 
 -- | Draws a figure on the grid
-drawFigure :: Position -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
+drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
 drawFigure p (Figure _ _ bs) = mapM drawBlock (map (sumPair p) bs) >>=
                                (\ps -> return $ Pictures ps)
 
@@ -38,11 +38,12 @@ drawCup :: StateT TetrisGame (Reader AppConfig) Picture
 drawCup = do
   -- TODO: drawEmptyGrid
   b <- drawBlock (1,1)
-  (x, y) <- fmap _cupPosition $ ask
-  return $ Color black $ Graphics.Gloss.Line [ (x, y)
-                        , (x, y - cupHeight)
-                        , (x + cupWidth, y - cupHeight)
-                        , (x + cupWidth, y) ]
+  (x, y) <- fmap cupPosition $ ask
+  return $ Pictures []
+  -- return $ Color black $ Graphics.Gloss.Line [ (x, y)
+  --                       , (x, y - cupHeight)
+  --                       , (x + cupWidth, y - cupHeight)
+  --                       , (x + cupWidth, y) ]
 
 -- | Draws right sidebar
 drawSidebar :: StateT TetrisGame (Reader AppConfig) Picture
@@ -52,13 +53,13 @@ drawSidebar = return $ Pictures []
 drawGame :: StateT TetrisGame (Reader AppConfig) Picture
 drawGame = do
   cupPic <- drawCup
-  (x, y) <- fmap _gamePosition $ ask
-  let bordersPic = Color black
-                   $ lineLoop [ (x, y)
-                              , (x + gameWidth, y)
-                              , (x + gameWidth, y - gameHeight)
-                              , (x, y - gameHeight) ]
-  return $ Pictures [ cupPic, bordersPic ]
+  (x, y) <- fmap gamePosition $ ask
+  -- let bordersPic = Color black
+  --                  $ lineLoop [ (x, y)
+  --                             , (x + gameWidth, y)
+  --                             , (x + gameWidth, y - gameHeight)
+  --                             , (x, y - gameHeight) ]
+  return $ Pictures [ cupPic ]
 
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture

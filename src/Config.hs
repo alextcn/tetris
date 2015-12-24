@@ -1,93 +1,65 @@
 module Config where
 
+-- | Position in blocks in grid
+type GridPosition = (Int, Int)
+-- | Position in pixels on screen
+type Position = (Float, Float)
 
--- | Position in blocks in cup
-type Position = (Int, Int)
+-- | Window size in pixels
+type WindowSize = (Int, Int)
+-- Game size in pixels
+type GameSize = (Float, Float)
+-- Cup size in pixels
+type CupSize = (Float, Float)
+-- Window position relates to screen
+type WindowPosition = (Int, Int)
+-- Size of one square block of grid
+type BlockSize = Float
+-- Size of grid in blocks
+type GridSize = (Int, Int)
 
 data AppConfig = AppConfig
-    { _windowWidth :: Int
-    , _windowHeight :: Int
-    , _gameWidth :: Float
-    , _gameHeight :: Float
-    , _blockSize :: Float
-    , _cupBlocksWidth :: Int
-    , _cupBlocksHeight :: Int
-    , _startPosition :: Position
-    , _cupWidth :: Float
-    , _cupHeight :: Float
-    , _windowPosition :: (Float, Float)
-    , _gamePosition :: (Float, Float)
-    , _cupPosition :: (Float, Float)
+    { windowSize :: WindowSize         -- Window size in pixels
+    , gameSize :: GameSize             -- Game size in pixels
+    , cupSize :: CupSize               -- Cup size in pixels (computed)
+    , windowPosition :: WindowPosition -- Window position relates to screen
+    , gamePosition :: Position         -- Game position relates to window (computed?)
+    , cupPosition :: Position          -- Cup position relates to game (computed?)
+    , blockSize :: BlockSize           -- Size of one square block of grid
+    , gridSize :: GridSize             -- Size of grid in blocks
+    , startPosition :: GridPosition    -- Starting position of the falling figures (computed)
     }
 
--- TODO: write normalize contruct function
+-- | Default app config constructor
 defaultAppConfig :: AppConfig
-defaultAppConfig =
-    AppConfig windowWidth windowWidth gameWidth gameHeight
-              blockSize 24 40 (12, 40) cupWidth cupHeight windowPosition gamePosition cupPosition
+defaultAppConfig = createAppConfig defaultWindowSize defaultGameSize defaultBlockSize
+                   defaultGridSize defaultWindowPosition
 
--- calcAppConfig :: AppConfig
--- calcAppConfig winW winH
+-- | Creates AppConfig with computed properties
+createAppConfig :: WindowSize -> GameSize -> BlockSize -> GridSize -> WindowPosition -> AppConfig
+createAppConfig ws gms bs grs wp = AppConfig ws gms (cupSize bs grs) wp (gamePosition gms)
+                                   (cupPosition gms) bs grs (startPosition grs)
+  where
+    cupSize :: BlockSize -> GridSize -> CupSize
+    cupSize bs (grw, grh) = (bs * fromIntegral grw, bs * fromIntegral grh)
+    gamePosition (gmw, gmh) = (-gmw/2, gmh/2)
+    cupPosition gms@(gmw, gmh) = let (x,y) = gamePosition gms in
+                                (x + gmw * 0.1, y - gmh * 0.1)
+    startPosition (grw, grh) = (div grw 2, grh)
 
--- ALL THE GLOBAL PARAMS STACKED IN HERE
+------------------- Default values ------------------
 
------------------- Size ------------------
+defaultWindowSize :: WindowSize
+defaultWindowSize = (1024, 600)
 
--- | Width of the window
-windowWidth :: Int
-windowWidth               = 1024
+defaultGameSize :: GameSize
+defaultGameSize = (500, 500)
 
--- | Height of the window
-windowHeight :: Int
-windowHeight              = 600
+defaultBlockSize :: BlockSize
+defaultBlockSize = 10
 
--- | Width of the game field
-gameWidth :: Float
-gameWidth                 = 500
+defaultGridSize :: GridSize
+defaultGridSize = (24, 40)
 
--- | Height of the game field
-gameHeight :: Float
-gameHeight                = 500
-
--- | Width of the cup
-cupWidth :: Float
-cupWidth                  = 24 * blockSize
-
--- | Height of the cup
-cupHeight :: Float
-cupHeight                 = 40 * blockSize
-
--- | Default size of the all blocks
-blockSize :: Float
-blockSize                 = 10
-
------------------- Position ------------------
-
--- | Window position relates to screen
-windowPosition :: (Float, Float)
-windowPosition            = (20, 20)
-
--- | Game position relates to window
-gamePosition :: (Float, Float)
-gamePosition              = (-gameWidth / 2, gameHeight / 2)
-
--- | Cup position relates to game
-cupPosition :: (Float, Float)
-cupPosition               = let (x,y) = gamePosition in
-                            (x + gameWidth * 0.1, y - gameHeight * 0.1)
-
--- | Cup left-bottom corner
-cupBottomLeft :: (Float, Float)
-cupBottomLeft             = let (x,y) = cupPosition in
-                            (x, y - cupHeight)
-
--- | Cup right-bottom corner
-cupBottomRight :: (Float, Float)
-cupBottomRight            = let (x,y) = cupPosition in
-                            (x + cupWidth, y - cupHeight)
-
--- | Starting position of the falling figures (is it global?)
-startPosition :: (Float, Float)
-startPosition             = (x + cupWidth / 2, y + blockSize * 2)
-                            where
-                              (x, y) = cupPosition
+defaultWindowPosition :: WindowPosition
+defaultWindowPosition = (20, 20)

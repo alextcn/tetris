@@ -7,7 +7,7 @@ import System.Random
 import Config
 import Figures
 
-type Grid = Array Position Bool
+type Grid = Array GridPosition Bool
 
 data Hardness = Easy | Medium | Hard
 
@@ -15,7 +15,7 @@ data Hardness = Easy | Medium | Hard
 data TetrisGame = Game
   { allFigures      :: AllFigures
   , fallingFigure   :: Figure
-  , fallingPosition :: Position
+  , fallingPosition :: GridPosition
   , width           :: Int
   , height          :: Int
   , nextFigures     :: [Figure]
@@ -30,12 +30,12 @@ initialState = do
   cfg <- ask
   gen <- liftIO getStdGen
   let fs = randomFigures gen
-  let grid = initGrid (_cupBlocksWidth cfg) (_cupBlocksHeight cfg)
-  return $ Game initFigures (head fs) (_startPosition cfg) 24 40 (tail fs) grid Easy False
+  let grid = initGrid (gridSize cfg)
+  return $ Game initFigures (head fs) (startPosition cfg) 24 40 (tail fs) grid Easy False
 
 -- | Initial grid state
-initGrid :: Int -> Int -> Grid
-initGrid w h = listArray ((0,0), (w-1, h-1)) (repeat False)
+initGrid :: GridSize -> Grid
+initGrid (w, h) = listArray ((0,0), (w-1, h-1)) (repeat False)
 
 -- | List of random figures
 randomFigures :: (RandomGen g) => g -> [Figure]

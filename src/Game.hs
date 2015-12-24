@@ -22,7 +22,7 @@ runGame = play
 
 
 window :: Display
-window = InWindow "Tetris" (windowWidth, windowHeight) (20, 20)
+window = InWindow "Tetris" defaultWindowSize defaultWindowPosition
 
 background :: Color
 background = (makeColorI 152 152 152 255)
