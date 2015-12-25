@@ -15,6 +15,7 @@ data Hardness = Easy | Medium | Hard
 data TetrisGame = Game
   { fallingFigure   :: Figure
   , fallingPosition :: GridPosition
+  , startFalling    :: GridPosition
   , width           :: Int
   , height          :: Int
   , nextFigures     :: [Figure]
@@ -30,7 +31,8 @@ initialState = do
   gen <- liftIO getStdGen
   let fs = randomFigures gen
   let grid = initGrid (gridSize cfg)
-  return $ Game (head fs) (startPosition cfg) 24 40 (tail fs) grid Easy False
+  let startPos = startPosition cfg
+  return $ Game (head fs) startPos startPos 24 40 (tail fs) grid Easy False
 
 -- | Initial grid state
 initGrid :: GridSize -> Grid
@@ -40,9 +42,10 @@ initGrid (w, h) = listArray ((0,0), (w-1, h-1)) (repeat False)
 randomFigures :: (RandomGen g) => g -> [Figure]
 randomFigures gen = zipWith allFigures (randoms gen) (randoms gen)
 
--- | Sets the currently falling figure from nextFigure
+-- | Sets the currently falling figure from nextFigures
 nextFigureGame :: TetrisGame -> TetrisGame
-nextFigureGame = undefined
+nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) = 
+                          Game (head fs) spos spos w h (tail fs) grid hrd isPs
 
 -- | Shifts left a figure if able to
 shiftLeftGame :: TetrisGame -> TetrisGame
