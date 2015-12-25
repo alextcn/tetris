@@ -1,25 +1,44 @@
+{-# LANGUAGE ViewPatterns #-}
 module Figures where
 
 import Config
 import qualified Data.Map as Map
+import System.Random
 
 -- Tetris figures
 
 type Block = (Int, Int)
 data FigureType = Cube | Tank | Stick | Snake1 | Snake2 | Corner1 | Corner2
+  deriving (Enum, Bounded, Show)
 data Rotation = D1 | D2 | D3 | D4
-  deriving (Enum)
-
+  deriving (Enum, Bounded, Show)
+data Figure = Figure FigureType Rotation [Block]
+  deriving Show
+  
+-- Instance of class Random for FigureType
+instance Random FigureType where
+    random g = randomR (minBound, maxBound) g
+    randomR (a,b) g = case randomR (fromEnum a, fromEnum b) g of
+                        (r, g') -> (toEnum r, g')
+                        
+-- Instance of class Random for Rotation
+instance Random Rotation where
+    random g = randomR (minBound, maxBound) g
+    randomR (a,b) g = case randomR (fromEnum a, fromEnum b) g of
+                        (r, g') -> (toEnum r, g')
+  
+-- Rotation
 nextRotation :: Rotation -> Rotation
 nextRotation D1 = D2
 nextRotation D2 = D3
 nextRotation D3 = D4
 nextRotation D4 = D1
-  
-data Figure = Figure FigureType Rotation [Block]
+
 
 rotate :: Figure -> Figure
-rotate (Figure t r _) = allFigures t (nextRotation r)
+rotate (Figure t (nextRotation -> r) _) = allFigures t r
+
+------------------------ All Figures -------------------------
 
 allFigures :: FigureType -> Rotation -> Figure
 allFigures Cube r = Figure Cube r [(0,0),(0,1),(1,1),(1,0)]
