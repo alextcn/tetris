@@ -13,8 +13,7 @@ data Hardness = Easy | Medium | Hard
 
 -- | Data represents the state of the Tetris game
 data TetrisGame = Game
-  { allFigures      :: AllFigures
-  , fallingFigure   :: Figure
+  { fallingFigure   :: Figure
   , fallingPosition :: GridPosition
   , width           :: Int
   , height          :: Int
@@ -31,7 +30,7 @@ initialState = do
   gen <- liftIO getStdGen
   let fs = randomFigures gen
   let grid = initGrid (gridSize cfg)
-  return $ Game initFigures (head fs) (startPosition cfg) 24 40 (tail fs) grid Easy False
+  return $ Game (head fs) (startPosition cfg) 24 40 (tail fs) grid Easy False
 
 -- | Initial grid state
 initGrid :: GridSize -> Grid
