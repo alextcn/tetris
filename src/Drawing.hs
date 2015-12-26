@@ -29,9 +29,9 @@ drawBlock block = do
   let bxp = fst cp + ((fromIntegral $ fst block) * sz)
   let byp = snd cp + ((fromIntegral $ snd block) * sz)
   return $ Color (makeColorI 30 30 30 255) (lineLoop [ (bxp, byp)
-                                                    , (bxp + sz, byp)
-                                                    , (bxp + sz, byp + sz)
-                                                    , (bxp, byp + sz) ])
+                                                     , (bxp + sz, byp)
+                                                     , (bxp + sz, byp + sz)
+                                                     , (bxp, byp + sz) ] )
 
 -- | Draws falling figure of the game state
 drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
@@ -48,9 +48,14 @@ drawGrid = do
 drawCup :: StateT TetrisGame (Reader AppConfig) Picture
 drawCup = do
   config <- ask
-  b <- drawBlock (1,1)
   (x, y) <- fmap cupPosition $ ask
-  return $ Pictures [drawEmptyGrid config]
+  sz <- fmap cupSize $ ask
+  let height = snd sz
+  let width = fst sz
+  return $ Pictures [drawEmptyGrid config, Line [ (x, y + height)
+                                                , (x, y)
+                                                , (x + width, y)
+                                                , (x + width, y + height) ] ]
 
 -- | Draws empty grid
 drawEmptyGrid :: AppConfig -> Picture
