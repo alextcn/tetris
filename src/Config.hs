@@ -59,7 +59,7 @@ defaultBlockSize :: BlockSize
 defaultBlockSize = 20
 
 defaultGridSize :: GridSize
-defaultGridSize = (24, 20)
+defaultGridSize = (10, 20)
 
 defaultWindowPosition :: WindowPosition
 defaultWindowPosition = (20, 20)
