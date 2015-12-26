@@ -86,7 +86,7 @@ shiftDownGame curTetrisGame@(Game ff (shiftDown -> fpos) spos w h fs grid hrd is
 goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
 goodCoords grid w h = all goodCoord
   where
-    goodCoord (x,y) = x >= 0 && x < w && y >= 0 && y < h && isJust (Map.lookup (x,y) grid)
+    goodCoord (x,y) = x >= 0 && x < w && y >= 0 && isJust (Map.lookup (x,y) grid)
     
 getGridAsList :: TetrisGame -> [GridPosition]
 getGridAsList (Game _ _ _ _ _ _ grid _ _) = Map.keys grid
