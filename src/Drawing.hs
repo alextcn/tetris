@@ -15,10 +15,11 @@ import Graphics.Gloss.Interface.Pure.Game
 
 -- | Draws all debug components
 drawDebug :: StateT TetrisGame (Reader AppConfig) Picture
-drawDebug = return $ Pictures [drawCenterScreen, drawHelp]
+drawDebug = do
+  state <- get
+  return $ drawHelp state
   where
-    drawCenterScreen = Color ( green) $ circleSolid 2
-    drawHelp = translate (-250) 270 $ scale 0.2 0.2 $ text "Press P to pause or unpause the game."
+    drawHelp ss = translate (-250) 270 $ scale 0.2 0.2 $ text $ "Count in grid = " ++ (show $ countInGrid ss) --"Press P to pause or unpause the game."
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
@@ -28,10 +29,10 @@ drawBlock block = do
   let sz = blockSize conf
   let bxp = fst cp + ((fromIntegral $ fst block) * sz)
   let byp = snd cp + ((fromIntegral $ snd block) * sz)
-  return $ Color (makeColorI 30 30 30 255) (lineLoop [ (bxp, byp)
-                                                     , (bxp + sz, byp)
-                                                     , (bxp + sz, byp + sz)
-                                                     , (bxp, byp + sz) ] )
+  return $ Color (makeColorI 30 30 30 255) (lineLoop [ (bxp + 1, byp + 1)
+                                                     , (bxp + sz - 1, byp + 1)
+                                                     , (bxp + sz - 1, byp + sz - 1)
+                                                     , (bxp + 1, byp + sz - 1) ] )
 
 -- | Draws falling figure of the game state
 drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
@@ -41,8 +42,8 @@ drawFigure p f@(Figure _ _ bs) = mapM drawBlock (getRealCoords f p) >>= return .
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
 drawGrid = do
   state <- get
-  mapM drawBlock (getGridAsList state)
-  return $ Pictures []
+  pics <- mapM drawBlock (getGridAsList state)
+  return $ Pictures pics
 
 -- | Draws a cup figures are falling into (with empty grid)
 drawCup :: StateT TetrisGame (Reader AppConfig) Picture
@@ -100,4 +101,5 @@ drawWindow = do
   figurePic <- drawFigure pos fig
   sidebarPic <- drawSidebar
   debugPic <- drawDebug
-  return $ Pictures [ gamePic, figurePic, sidebarPic, debugPic ]
+  gridPic <- drawGrid
+  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, debugPic ]
