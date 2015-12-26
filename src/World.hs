@@ -1,3 +1,4 @@
+{-# LANGUAGE ViewPatterns #-}
 module World where
 
 import Data.Array.IArray
@@ -6,6 +7,7 @@ import System.Random
 
 import Config
 import Figures
+import Util
 
 type Grid = Array GridPosition Bool
 
@@ -34,6 +36,10 @@ initialState = do
   let startPos = startPosition cfg
   return $ Game (head fs) startPos startPos 24 40 (tail fs) grid Easy False
 
+-- | Real position in Grid
+getRealCoords :: Figure -> GridPosition -> [Block]
+getRealCoords (Figure _ _ bs) curPos = map (sumPair curPos) bs
+  
 -- | Initial grid state
 initGrid :: GridSize -> Grid
 initGrid (w, h) = listArray ((0,0), (w-1, h-1)) (repeat False)
@@ -49,12 +55,24 @@ nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) =
 
 -- | Shifts left a figure if able to
 shiftLeftGame :: TetrisGame -> TetrisGame
-shiftLeftGame = undefined
+shiftLeftGame curTetrisGame@(Game ff ((sumPair (-1,0)) -> fpos) spos w h fs grid hrd isPs)
+  | goodCoords (getRealCoords ff fpos) grid w h = curTetrisGame
+  | otherwise = Game ff fpos spos w h fs grid hrd isPs
 
 -- | Shifts right a figure if able to
 shiftRightGame :: TetrisGame -> TetrisGame
-shiftRightGame = undefined
+shiftRightGame curTetrisGame@(Game ff ((sumPair (1,0)) -> fpos) spos w h fs grid hrd isPs)
+  | goodCoords (getRealCoords ff fpos) grid w h = curTetrisGame
+  | otherwise = Game ff fpos spos w h fs grid hrd isPs
 
 -- | Shifts down a figure if able to
 shiftDownGame :: TetrisGame -> TetrisGame
-shiftDownGame = undefined
+shiftDownGame curTetrisGame@(Game ff ((sumPair (0,-1)) -> fpos) spos w h fs grid hrd isPs)
+  | goodCoords (getRealCoords ff fpos) grid w h = curTetrisGame
+  | otherwise = Game ff fpos spos w h fs grid hrd isPs
+
+goodCoords :: [Block] -> Grid -> Int -> Int -> Bool
+goodCoords bs grid w h = all (goodCoord grid w h) bs
+  where
+    goodCoord :: Grid -> Int -> Int -> Block -> Bool
+    goodCoord gr w h (x,y) = x >= 0 && x < w && y >= 0 && y < h && not (grid ! (x,y))
