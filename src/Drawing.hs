@@ -25,11 +25,9 @@ drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
 drawBlock block = do
   conf <- ask
   let cp = cupPosition conf
-  let gsY = fromIntegral $ snd $ gridSize conf
-  let gsX = fromIntegral $ fst $ gridSize conf
-  let bxp = (fromIntegral $ fst block) * gsX + fst cp  -- block's x position
-  let byp = (fromIntegral $ snd block) * gsY + snd cp  -- block's y position
   let sz = blockSize conf
+  let bxp = fst cp + ((fromIntegral $ fst block) * sz)
+  let byp = snd cp + ((fromIntegral $ snd block) * sz)
   return $ Color (makeColorI 30 30 30 255) (lineLoop [ (bxp, byp)
                                                     , (bxp + sz, byp)
                                                     , (bxp + sz, byp + sz)
