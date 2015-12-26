@@ -62,9 +62,14 @@ handler (EventKey (SpecialKey KeyLeft) Down _ _) game
 handler (EventKey (SpecialKey KeyRight) Down _ _) game
   = shiftRightFigure game
 
--- | Handles "Up" button
+-- | Handles "up" button
 handler (EventKey (SpecialKey KeyUp) Down _ _) game
   = rotateFigure game
+
+-- | Handles "up" button
+handler (EventKey (SpecialKey KeyDown) Down _ _) game
+  = shiftDownFigure game
+
 
 -- | Handles the rest input
 handler _ game = game
