@@ -45,6 +45,23 @@ drawCup = do
   --                       , (x + cupWidth, y - cupHeight)
   --                       , (x + cupWidth, y) ]
 
+-- | Draws empty grid
+drawEmptyGrid :: AppConfig -> Picture
+drawEmptyGrid conf =
+  let cp = cupPosition conf in
+  let gsY = snd $ gridSize conf in  -- Number of cells along vertical axis
+  let stepY = (snd $ cupSize conf) / fromIntegral gsY in  -- step y along vertical axis
+  let gsX = fst $ gridSize conf in  -- Number of cells along horizontal axis
+  let stepX = (fst $ cupSize conf) / fromIntegral gsX in  -- step x along horizontal axis
+  Color (makeColorI 150 150 150 255) $ Pictures [drawHorizontal cp gsY stepY, drawVertical cp gsX stepX]
+    where
+      drawHorizontal cp gsY stepY = 
+        let points = [snd cp + stepY * 1, snd cp + stepY * 2 .. snd cp + stepY * fromIntegral gsY] in -- Y line coords along vertical axis
+        Pictures $ zipWith (\p1 p2 -> Line [(fst cp, p1), (fst cp + (fst $ cupSize conf), p2)]) points points
+      drawVertical cp gsX stepX =
+        let points = [fst cp + stepX * 1, fst cp + stepX * 2 .. fst cp + stepX * fromIntegral gsX] in -- X line coords along horizontal axis
+        Pictures $ zipWith (\p1 p2 -> Line [(p1, snd cp), (p2, snd cp + (snd $ cupSize conf))]) points points
+
 -- | Draws right sidebar
 drawSidebar :: StateT TetrisGame (Reader AppConfig) Picture
 drawSidebar = return $ Pictures []
