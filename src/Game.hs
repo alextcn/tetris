@@ -43,7 +43,7 @@ render game = runReader (evalStateT drawWindow game) defaultAppConfig
 
 -- | Updates game state by shifting current falling figure down
 update :: Float -> TetrisGame -> TetrisGame
-update _ game = undefined
+update _ game = shiftDownGame game
 
 -- | A function to handle input events.
 handler :: Event -> TetrisGame -> TetrisGame
