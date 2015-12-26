@@ -5,6 +5,8 @@ import qualified Data.Map as Map
 import Data.Maybe
 import Control.Monad.Reader
 import System.Random
+import Data.List
+import Data.Ord
 
 import Config
 import Figures
@@ -50,8 +52,15 @@ nextFigureGame :: TetrisGame -> TetrisGame
 nextFigureGame (Game (Figure ftype rot bs) fpos spos w h fs grid hrd isPs) = 
                           Game (head fs) spos spos w h (tail fs) updateGrid hrd isPs
   where
-    updateGrid = foldl addToGrid grid bs
+    updateGrid = burnFullLines $ foldl addToGrid grid bs
     addToGrid grid b = Map.insert b () grid
+    burnFullLines = Map.fromList 
+      . (`zip` repeat ()) 
+      . concat 
+      . filter ((==w) . length) 
+      . groupBy (\(_,y1) (_,y2) -> y1 == y2)
+      . sortBy (comparing snd)
+      . Map.keys
                             
 
 -- | Shifts left a figure if able to
@@ -78,6 +87,9 @@ goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
 goodCoords grid w h = all goodCoord
   where
     goodCoord (x,y) = x >= 0 && x < w && y >= 0 && y < h && isJust (Map.lookup (x,y) grid)
+    
+getGridAsList :: TetrisGame -> [GridPosition]
+getGridAsList (Game _ _ _ _ _ _ grid _ _) = Map.keys grid
     
 shiftRight :: GridPosition -> GridPosition
 shiftRight = sumPair (1,0)
