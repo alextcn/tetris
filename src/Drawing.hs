@@ -26,7 +26,7 @@ drawBlock block = do
   conf <- ask
   let cp = cupPosition conf
   let gsY = fromIntegral $ snd $ gridSize conf
-  let gsX = fromIntegral $ fst $ gridSize conf 
+  let gsX = fromIntegral $ fst $ gridSize conf
   let bxp = (fromIntegral $ fst block) * gsX + fst cp  -- block's x position
   let byp = (fromIntegral $ snd block) * gsY + snd cp  -- block's y position
   let sz = blockSize conf
@@ -37,7 +37,7 @@ drawBlock block = do
 
 -- | Draws falling figure of the game state
 drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
-drawFigure p (Figure _ _ bs) = mapM drawBlock (map (sumPair p) bs) >>= return . Pictures
+drawFigure p f@(Figure _ _ bs) = mapM drawBlock (getRealCoords f p) >>= return . Pictures
 
 -- | Draws a figure on the grid
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
@@ -65,7 +65,7 @@ drawEmptyGrid conf =
   let stepX = (fst $ cupSize conf) / fromIntegral gsX in  -- step x along horizontal axis
   Color (makeColorI 200 200 200 255) $ Pictures [drawHorizontal cp gsY stepY, drawVertical cp gsX stepX]
     where
-      drawHorizontal cp gsY stepY = 
+      drawHorizontal cp gsY stepY =
         let points = [snd cp + stepY * 1, snd cp + stepY * 2 .. snd cp + stepY * (fromIntegral gsY - 1)] in -- Y line coords along vertical axis
         Pictures $ zipWith (\p1 p2 -> Line [(fst cp, p1), (fst cp + (fst $ cupSize conf), p2)]) points points
       drawVertical cp gsX stepX =
