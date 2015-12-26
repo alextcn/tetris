@@ -39,7 +39,10 @@ drawFigure p f@(Figure _ _ bs) = mapM drawBlock (getRealCoords f p) >>= return .
 
 -- | Draws a figure on the grid
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
-drawGrid = undefined
+drawGrid = do
+  state <- get
+  mapM drawBlock (getGridAsList state)
+  return $ Pictures []
 
 -- | Draws a cup figures are falling into (with empty grid)
 drawCup :: StateT TetrisGame (Reader AppConfig) Picture
@@ -48,10 +51,6 @@ drawCup = do
   b <- drawBlock (1,1)
   (x, y) <- fmap cupPosition $ ask
   return $ Pictures [drawEmptyGrid config]
-  -- return $ Color black $ Graphics.Gloss.Line [ (x, y)
-  --                       , (x, y - cupHeight)
-  --                       , (x + cupWidth, y - cupHeight)
-  --                       , (x + cupWidth, y) ]
 
 -- | Draws empty grid
 drawEmptyGrid :: AppConfig -> Picture
