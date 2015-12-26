@@ -86,7 +86,7 @@ shiftDownFigure curTetrisGame@(Game ff (shiftDown -> fpos) spos w h fs grid hrd 
 rotateFigure :: TetrisGame -> TetrisGame
 rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos w h fs grid hrd isPs)
   | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs
-  | otherwise = nextFigureGame curTetrisGame
+  | otherwise = curTetrisGame
   
 
 -- | Checks that the point belongs to the Grid and that it is free.
