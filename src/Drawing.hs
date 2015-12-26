@@ -19,7 +19,7 @@ drawDebug = do
   state <- get
   return $ drawHelp state
   where
-    drawHelp ss = translate (-250) 270 $ scale 0.2 0.2 $ text $ "Count in grid = " ++ (show $ countInGrid ss) --"Press P to pause or unpause the game."
+    drawHelp ss = translate (-250) 270 $ scale 0.2 0.2 $ text "Press P to pause or unpause the game."
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
