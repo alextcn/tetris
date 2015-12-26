@@ -11,11 +11,13 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
 runGame :: IO ()
-runGame = play
+runGame = do
+  state <- initState
+  play
         window       -- Display mode.
         background   -- Background color.
         fps          -- Number of simulation steps to take for each second of real time.
-        initState    -- The initial world.
+        state        -- The initial world.
         render       -- A function to convert the world a picture.
         handler      -- A function to handle input events.
         update       -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
@@ -32,8 +34,8 @@ background = (makeColorI 152 152 152 255)
 fps :: Int
 fps = 3
 
-initState :: TetrisGame
-initState = undefined
+initState :: IO TetrisGame
+initState = runReaderT (initialState) defaultAppConfig
 
 -- | Render function for game
 render :: TetrisGame -> Picture

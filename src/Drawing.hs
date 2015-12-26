@@ -26,8 +26,7 @@ drawBlock = undefined
 
 -- | Draws a figure on the grid
 drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
-drawFigure p (Figure _ _ bs) = mapM drawBlock (map (sumPair p) bs) >>=
-                               (\ps -> return $ Pictures ps)
+drawFigure p (Figure _ _ bs) = mapM drawBlock (map (sumPair p) bs) >>= return . Pictures
 
 -- | Draws falling figure of the game state
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
