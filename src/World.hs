@@ -57,12 +57,14 @@ nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) = Game (head fs) spos sp
     addToGrid grid b = Map.insert b () grid
     burnFullLines = Map.fromList
       . (`zip` repeat ())
-      . concat
+      . concat 
+      . zipWith (\num list -> map (\(x,y)->(x,num)) list) [0,1..]
       . filter ((/=w) . length)
       . groupBy (\(_,y1) (_,y2) -> y1 == y2)
       . sortBy (comparing snd)
       . Map.keys
       
+    
 -- | Shifts left a figure if able to
 shiftLeftFigure :: TetrisGame -> TetrisGame
 shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos w h fs grid hrd isPs)
