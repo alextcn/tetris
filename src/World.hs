@@ -15,6 +15,7 @@ import Util
 type Grid = Map.Map GridPosition ()
 
 data Hardness = Easy | Medium | Hard
+      deriving Show
 
 -- | Data represents the state of the Tetris game
 data TetrisGame = Game
@@ -28,6 +29,7 @@ data TetrisGame = Game
   , hardness        :: Hardness
   , isPause         :: Bool
   }
+  deriving Show
 
 -- | Initial state of the game
 initialState :: ReaderT AppConfig IO TetrisGame
@@ -49,20 +51,18 @@ randomFigures gen = zipWith getFigures (randoms gen) (randoms gen)
 
 -- | Sets the currently falling figure from nextFigures
 nextFigureGame :: TetrisGame -> TetrisGame
-nextFigureGame (Game (Figure ftype rot bs) fpos spos w h fs grid hrd isPs) =
-                          Game (head fs) spos spos w h (tail fs) updateGrid hrd isPs
+nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) = Game (head fs) spos spos w h (tail fs) updateGrid hrd isPs
   where
-    updateGrid = burnFullLines $ foldl addToGrid grid bs
+    updateGrid = burnFullLines $ foldl addToGrid grid (getRealCoords ff fpos)
     addToGrid grid b = Map.insert b () grid
     burnFullLines = Map.fromList
       . (`zip` repeat ())
       . concat
-      . filter ((==w) . length)
+      . filter ((/=w) . length)
       . groupBy (\(_,y1) (_,y2) -> y1 == y2)
       . sortBy (comparing snd)
       . Map.keys
-
-
+      
 -- | Shifts left a figure if able to
 shiftLeftFigure :: TetrisGame -> TetrisGame
 shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos w h fs grid hrd isPs)
