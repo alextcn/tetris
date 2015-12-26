@@ -36,39 +36,39 @@ nextRotation D4 = D1
 
 
 rotate :: Figure -> Figure
-rotate (Figure t (nextRotation -> r) _) = allFigures t r
+rotate (Figure t (nextRotation -> r) _) = getFigures t r
 
 ------------------------ All Figures -------------------------
 
-allFigures :: FigureType -> Rotation -> Figure
-allFigures Cube r = Figure Cube r [(0,0),(0,1),(1,1),(1,0)]
+getFigures :: FigureType -> Rotation -> Figure
+getFigures Cube r = Figure Cube r [(0,0),(0,1),(1,1),(1,0)]
 
-allFigures Tank D1 = Figure Tank D1 [(0,0),(0,1),(-1,0),(1,0)]
-allFigures Tank D2 = Figure Tank D2 [(0,0),(0,1),(0,-1),(1,0)]
-allFigures Tank D3 = Figure Tank D3 [(0,0),(0,-1),(-1,0),(1,0)]
-allFigures Tank D4 = Figure Tank D4 [(0,0),(0,1),(0,-1),(-1,0)]
+getFigures Tank D1 = Figure Tank D1 [(0,0),(0,1),(-1,0),(1,0)]
+getFigures Tank D2 = Figure Tank D2 [(0,0),(0,1),(0,-1),(1,0)]
+getFigures Tank D3 = Figure Tank D3 [(0,0),(0,-1),(-1,0),(1,0)]
+getFigures Tank D4 = Figure Tank D4 [(0,0),(0,1),(0,-1),(-1,0)]
 
-allFigures Stick D1 = Figure Stick D1 [(0,0),(-1,0),(1,0),(2,0)]
-allFigures Stick D2 = Figure Stick D2 [(0,0),(0,-1),(0,-2),(0,1)]
-allFigures Stick D3 = Figure Stick D3 [(0,0),(-1,0),(1,0),(2,0)]
-allFigures Stick D4 = Figure Stick D4 [(0,0),(0,-1),(0,-2),(0,1)]
+getFigures Stick D1 = Figure Stick D1 [(0,0),(-1,0),(1,0),(2,0)]
+getFigures Stick D2 = Figure Stick D2 [(0,0),(0,-1),(0,-2),(0,1)]
+getFigures Stick D3 = Figure Stick D3 [(0,0),(-1,0),(1,0),(2,0)]
+getFigures Stick D4 = Figure Stick D4 [(0,0),(0,-1),(0,-2),(0,1)]
     
-allFigures Snake1 D1 = Figure Snake1 D1 [(0,0),(-1,0),(0,-1),(1,-1)]
-allFigures Snake1 D2 = Figure Snake1 D2 [(0,0),(0,-1),(1,0),(1,1)]
-allFigures Snake1 D3 = Figure Snake1 D3 [(0,0),(-1,0),(0,-1),(1,-1)]
-allFigures Snake1 D4 = Figure Snake1 D4 [(0,0),(0,-1),(1,0),(1,1)]    
+getFigures Snake1 D1 = Figure Snake1 D1 [(0,0),(-1,0),(0,-1),(1,-1)]
+getFigures Snake1 D2 = Figure Snake1 D2 [(0,0),(0,-1),(1,0),(1,1)]
+getFigures Snake1 D3 = Figure Snake1 D3 [(0,0),(-1,0),(0,-1),(1,-1)]
+getFigures Snake1 D4 = Figure Snake1 D4 [(0,0),(0,-1),(1,0),(1,1)]    
 
-allFigures Snake2 D1 = Figure Snake2 D1 [(0,0),(1,0),(0,-1),(-1,-1)]
-allFigures Snake2 D2 = Figure Snake2 D2 [(0,0),(0,-1),(-1,0),(-1,1)]
-allFigures Snake2 D3 = Figure Snake2 D3 [(0,0),(1,0),(0,-1),(-1,-1)]
-allFigures Snake2 D4 = Figure Snake2 D4 [(0,0),(0,-1),(-1,0),(-1,1)]
+getFigures Snake2 D1 = Figure Snake2 D1 [(0,0),(1,0),(0,-1),(-1,-1)]
+getFigures Snake2 D2 = Figure Snake2 D2 [(0,0),(0,-1),(-1,0),(-1,1)]
+getFigures Snake2 D3 = Figure Snake2 D3 [(0,0),(1,0),(0,-1),(-1,-1)]
+getFigures Snake2 D4 = Figure Snake2 D4 [(0,0),(0,-1),(-1,0),(-1,1)]
 
-allFigures Corner1 D1 = Figure Corner1 D1 [(0,0),(1,0),(-1,0),(-1,1)]
-allFigures Corner1 D2 = Figure Corner1 D2 [(0,0),(0,-1),(0,1),(1,1)]
-allFigures Corner1 D3 = Figure Corner1 D3 [(0,0),(1,0),(1,-1),(-1,0)]
-allFigures Corner1 D4 = Figure Corner1 D4 [(0,0),(0,-1),(-1,-1),(0,1)]
+getFigures Corner1 D1 = Figure Corner1 D1 [(0,0),(1,0),(-1,0),(-1,1)]
+getFigures Corner1 D2 = Figure Corner1 D2 [(0,0),(0,-1),(0,1),(1,1)]
+getFigures Corner1 D3 = Figure Corner1 D3 [(0,0),(1,0),(1,-1),(-1,0)]
+getFigures Corner1 D4 = Figure Corner1 D4 [(0,0),(0,-1),(-1,-1),(0,1)]
 
-allFigures Corner2 D1 = Figure Corner2 D1 [(0,0),(-1,0),(1,0),(1,1)]
-allFigures Corner2 D2 = Figure Corner2 D2 [(0,0),(0,-1),(1,-1),(0,1)]
-allFigures Corner2 D3 = Figure Corner2 D3 [(0,0),(-1,0),(-1,-1),(1,0)]
-allFigures Corner2 D4 = Figure Corner2 D4 [(0,0),(0,-1),(0,1),(-1,1)]
+getFigures Corner2 D1 = Figure Corner2 D1 [(0,0),(-1,0),(1,0),(1,1)]
+getFigures Corner2 D2 = Figure Corner2 D2 [(0,0),(0,-1),(1,-1),(0,1)]
+getFigures Corner2 D3 = Figure Corner2 D3 [(0,0),(-1,0),(-1,-1),(1,0)]
+getFigures Corner2 D4 = Figure Corner2 D4 [(0,0),(0,-1),(0,1),(-1,1)]

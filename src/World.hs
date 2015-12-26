@@ -40,7 +40,7 @@ initGrid (w, h) = listArray ((0,0), (w-1, h-1)) (repeat False)
 
 -- | List of random figures
 randomFigures :: (RandomGen g) => g -> [Figure]
-randomFigures gen = zipWith allFigures (randoms gen) (randoms gen)
+randomFigures gen = zipWith getFigures (randoms gen) (randoms gen)
 
 -- | Sets the currently falling figure from nextFigures
 nextFigureGame :: TetrisGame -> TetrisGame
