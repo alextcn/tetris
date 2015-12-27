@@ -13,21 +13,21 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
 
-toGlossColor Red = makeColorI 235 93 71 255
-toGlossColor Yellow = makeColorI 230 220 95 255
-toGlossColor Green = makeColorI 90 232 148 255
-toGlossColor Blue = makeColorI 138 110 254 255
-toGlossColor Violet = makeColorI 153 93 181 255
+toGlossColor Red = makeColorI 224 102 102 255
+toGlossColor Yellow = makeColorI 245 220 116 255
+toGlossColor Green = makeColorI 180 198 104 255
+toGlossColor Blue = makeColorI 71 176 223 255
+toGlossColor Violet = makeColorI 190 162 222 255
 
 
 -- CONSTANT COLORS FOR DRAWING FUNCTIONS
 
+backgroundColor = makeColorI 29 31 33 255
+textColor = makeColorI 197 200 198 255
 gridColor = makeColorI 255 255 255 40
-gridBlockColor = makeColorI 5 5 5 196
-blockColor = makeColorI 155 74 30 255
+cupColor = makeColorI 85 85 85 255
 overlayColor = makeColorI 10 10 10 200
-textColor = makeColorI 245 222 179 255
-cupColor = makeColorI 255 255 255 10
+gameOverColor = makeColorI 181 7 7 220
 
 -- DRAWING FUNCTIONS
 
@@ -38,9 +38,9 @@ drawHelp = do
   conf <- ask
   let (x, y) = cupPosition conf
   let w = snd $ cupSize conf
-  return $ Pictures $ writeInfo (x - 300, y + w) (-20) (hardness state) (score state)
+  return $ Pictures $ writeInfo (x - 250, y + w) (-20) (hardness state) (score state)
     where
-      writeInfo (x, y) step hard score = 
+      writeInfo (x, y) step hard score =
         snd $
         foldl (\(s, pics) str -> (s + step, pics ++ [Color textColor $ translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
           [ "Press P to pause"
@@ -65,7 +65,7 @@ drawBlock block color = do
 
 -- | Draws falling figure of the game state
 drawFigure :: Color -> GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
-drawFigure c p f@(Figure _ _ bs) = 
+drawFigure c p f@(Figure _ _ bs) =
   mapM ((flip drawBlock) c) (getRealCoords f p) >>= return . Pictures
 
 -- | Draws a figure on the grid
@@ -115,12 +115,12 @@ drawSidebar = do
   return $ Pictures [pic]
   where
     drawNextFigure pos fig fColor bs cp =
-      let np = (fst pos + 2, snd pos - 4) in
-      drawFigure fColor np fig >>= return
+      let np = (fst pos + 3, snd pos - 4) in
+      drawFigure fColor ((\(x,y) ->  (x+1, y-1)) np) fig >>= return
         . Pictures
         . ( : [ Color textColor
-              $ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) 
-              $ scale 0.15 0.15 
+              $ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs)
+              $ scale 0.15 0.15
               $ text "Prepare for this" ] )
 
 -- | Draws the left game window
@@ -144,8 +144,24 @@ drawGameOver = do
                                                           , (  winw,   winh)
                                                           , (  winw, - winh) ]
   return $ Pictures [ overlay
-                    , Color red $ translate (cx - 72) cy $ scale 0.2 0.2 $ text "Game Over"
-                    , Color white $ translate (cx - 72) (cy - 35) $ scale 0.15 0.15 $ text $ show $ score state ]
+                    , Color gameOverColor $ translate (cx - 72) cy $ scale 0.2 0.2 $ text "Game Over"
+                    , Color textColor $ translate (cx - 72) (cy - 35) $ scale 0.15 0.15 $ text $ show $ score state ]
+
+drawPauseOverlay :: StateT TetrisGame (Reader AppConfig) Picture
+drawPauseOverlay = do
+  conf <- ask
+  state <- get
+  let (px, py) = cupPosition conf
+  let (w, h) = cupSize conf
+  let (_winw, _winh) = windowSize conf
+  let (winw, winh) = (fromIntegral _winw, fromIntegral _winh)
+  let (cx, cy) = (px + w / 2, py + h / 2)
+  let overlay = Color overlayColor $ polygon [ (- winw, - winh)
+                                                          , (- winw,   winh)
+                                                          , (  winw,   winh)
+                                                          , (  winw, - winh) ]
+  return $ Pictures [ overlay
+                    , Color textColor $ translate (cx - 38) cy $ scale 0.2 0.2 $ text "Pause" ]
 
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture
@@ -160,7 +176,10 @@ drawWindow = do
   helpPic <- drawHelp
   gridPic <- drawGrid
   gameOverOverlayPic <- drawGO $ gameOver state
-  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic, gameOverOverlayPic ]
+  pauseOverlayPic <- drawPO (isPause state) (gameOver state)
+  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic, gameOverOverlayPic, pauseOverlayPic ]
     where
       drawGO True = drawGameOver
-      drawGO False = return $ Pictures [] 
+      drawGO False = return $ Pictures []
+      drawPO True False = drawPauseOverlay
+      drawPO _ _ = return $ Pictures []
