@@ -32,6 +32,7 @@ instance Random Colors where
 -- CONSTANT COLORS FOR DRAWING FUNCTIONS
 
 gridColor = makeColorI 200 200 200 255
+gridBlockColor = makeColorI 5 5 5 196
 blockColor = makeColorI 155 74 30 255
 overlayColor = makeColorI 10 10 10 200
 
@@ -57,27 +58,28 @@ drawHelp = do
           , "Score " ++ (show score) ]
 
 -- | Draws a one basic block on the grid
-drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
-drawBlock block = do
+drawBlock :: Block -> Color -> StateT TetrisGame (Reader AppConfig) Picture
+drawBlock block color = do
   conf <- ask
   let cp = cupPosition conf
   let sz = blockSize conf
   let bxp = fst cp + ((fromIntegral $ fst block) * sz)
   let byp = snd cp + ((fromIntegral $ snd block) * sz)
-  return $ Color blockColor (polygon  [ (bxp + 1, byp + 1)
-                                                     , (bxp + sz - 1, byp + 1)
-                                                     , (bxp + sz - 1, byp + sz - 1)
-                                                     , (bxp + 1, byp + sz - 1) ] )
+  return $ Color color (polygon  [ (bxp + 1, byp + 1)
+                                      , (bxp + sz - 1, byp + 1)
+                                      , (bxp + sz - 1, byp + sz - 1)
+                                      , (bxp + 1, byp + sz - 1) ] )
 
 -- | Draws falling figure of the game state
 drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
-drawFigure p f@(Figure _ _ bs) = mapM drawBlock (getRealCoords f p) >>= return . Pictures
+drawFigure p f@(Figure _ _ bs) = 
+  mapM (`drawBlock` gridBlockColor) (getRealCoords f p) >>= return . Pictures
 
 -- | Draws a figure on the grid
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
 drawGrid = do
   state <- get
-  pics <- mapM drawBlock (getGridAsList state)
+  pics <- mapM (`drawBlock` gridBlockColor) (getGridAsList state)
   return $ Pictures pics
 
 -- | Draws a cup figures are falling into (with empty grid)
@@ -122,7 +124,9 @@ drawSidebar = do
       let np = (fst pos + 1, snd pos - 4) in
       drawFigure np fig >>= return
         . Pictures
-        . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) $ scale 0.15 0.15 $ text "Prepare for this" ] )
+        . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) 
+              $ scale 0.15 0.15 
+              $ text "Prepare for this" ] )
 
 -- | Draws the left game window
 drawGame :: StateT TetrisGame (Reader AppConfig) Picture

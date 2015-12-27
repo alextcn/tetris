@@ -55,6 +55,10 @@ handler :: Event -> TetrisGame -> TetrisGame
 handler (EventKey (Char 'p') Down _ _) game
   = game { isPause = not $ isPause game }
 
+-- | Handles "reset" button
+handler (EventKey (Char 'r') Down _ _) _
+  = initState
+
 -- | Handles "left" button
 handler (EventKey (SpecialKey KeyLeft) Down _ _) game
   = case isPause game of
