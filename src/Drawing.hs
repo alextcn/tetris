@@ -17,9 +17,9 @@ import Graphics.Gloss.Interface.Pure.Game
 drawDebug :: StateT TetrisGame (Reader AppConfig) Picture
 drawDebug = do
   state <- get
-  return $ drawHelp state
+  return $ drawHelp
   where
-    drawHelp ss = translate (-250) 270 $ scale 0.2 0.2 $ text "Press P to pause or unpause the game."
+    drawHelp = translate (-250) 270 $ scale 0.2 0.2 $ text "Press P to pause or unpause the game."
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
@@ -77,18 +77,23 @@ drawEmptyGrid conf =
 
 -- | Draws right sidebar
 drawSidebar :: StateT TetrisGame (Reader AppConfig) Picture
-drawSidebar = return $ Pictures []
+drawSidebar = do
+  state <- get
+  conf <- ask
+  pic <- drawNextFigure (gridSize conf) (head $ nextFigures state) (blockSize conf) (cupPosition conf)
+  return $ Pictures [pic]
+  where
+    drawNextFigure pos fig bs cp = 
+      let np = (fst pos + 2, snd pos - 4) in 
+      drawFigure np fig >>= return 
+        . Pictures 
+        . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) $ scale 0.15 0.15 $ text "Prepare for this" ] )
 
 -- | Draws the left game window
 drawGame :: StateT TetrisGame (Reader AppConfig) Picture
 drawGame = do
   cupPic <- drawCup
   (x, y) <- fmap gamePosition $ ask
-  -- let bordersPic = Color black
-  --                  $ lineLoop [ (x, y)
-  --                             , (x + gameWidth, y)
-  --                             , (x + gameWidth, y - gameHeight)
-  --                             , (x, y - gameHeight) ]
   return $ Pictures [ cupPic ]
 
 -- | Draws the whole window picture
