@@ -13,7 +13,7 @@ import Config
 import Figures
 import Util
 
-type Grid = Map.Map GridPosition ()
+type Grid = Map.Map (GridPosition, GameColor) ()
 
 data Hardness = Beginner | Learning | Average | Skilled | Masterful | Insane | Godlike
       deriving (Enum, Bounded, Show)
@@ -21,7 +21,7 @@ data Hardness = Beginner | Learning | Average | Skilled | Masterful | Insane | G
 -- COLORS
 
 data GameColor = Red | Yellow | Green | Blue | Violet
-  deriving (Enum, Bounded)
+  deriving (Enum, Bounded, Ord, Eq)
 
 -- Instance of class Random for Colors
 instance Random GameColor where
@@ -89,16 +89,16 @@ nextFigureGame g@Game {..}
     updateHardness :: TetrisGame -> TetrisGame
     updateHardness = id -- TODO: implement calculating new hardness
     
-    updateGrid = burnFullLines $ foldl (\gr bl -> (Map.insert bl () gr)) grid (getRealCoords fallingFigure fallingPosition)
+    updateGrid = burnFullLines $ foldl (\gr bl -> (Map.insert (bl, fallingColor) () gr)) grid (getRealCoords fallingFigure fallingPosition)
     
     checkingGO = any (\(_,y) -> y >= height) (getRealCoords fallingFigure fallingPosition)
     
     burnFullLines = listToGrid
       . concat
-      . zipWith (\num list -> map (\(x,y)->(x,num)) list) [0,1..]
+      . zipWith (\num list -> map (\((x,y),color)->((x,num),color)) list) [0,1..]
       . filter ((/=width) . length)
-      . groupBy (\(_,y1) (_,y2) -> y1 == y2)
-      . sortBy (comparing snd)
+      . groupBy (\((_,y1),_) ((_,y2),_) -> y1 == y2)
+      . sortBy (comparing (snd . fst))
       . gridToList
 
 
@@ -135,19 +135,19 @@ resetGame Game {..} = Game ((head . tail) nextFigures) startFalling startFalling
 goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
 goodCoords grid w h = all goodCoord
   where
-    goodCoord (x,y) = x >= 0 && x < w && y >= 0 && isNothing (Map.lookup (x,y) grid)
+    goodCoord pos@(x,y) = x >= 0 && x < w && y >= 0 && ((==0) . (length) . (filter (\(grPos, _) -> grPos == pos)) . gridToList) grid
 
 -- | Returns next figure
 getNextFigure :: TetrisGame -> Figure
 getNextFigure (nextFigures -> fs) = head fs
 
-getGridAsList :: TetrisGame -> [GridPosition]
+getGridAsList :: TetrisGame -> [(GridPosition,GameColor)]
 getGridAsList (grid -> gr) = gridToList gr
 
-listToGrid :: [GridPosition] -> Grid
+listToGrid :: [(GridPosition,GameColor)] -> Grid
 listToGrid = Map.fromList . (`zip` repeat ())
 
-gridToList :: Grid -> [GridPosition]
+gridToList :: Grid -> [(GridPosition,GameColor)]
 gridToList = Map.keys
 
 shiftRight :: GridPosition -> GridPosition
