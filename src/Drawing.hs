@@ -13,13 +13,21 @@ import Graphics.Gloss.Interface.Pure.Game
 
 -- DRAWING FUNCTIONS
 
--- | Draws all debug components
-drawDebug :: StateT TetrisGame (Reader AppConfig) Picture
-drawDebug = do
+-- | Draws all help components
+drawHelp :: StateT TetrisGame (Reader AppConfig) Picture
+drawHelp = do
   state <- get
-  return $ drawHelp
-  where
-    drawHelp = translate (-250) 270 $ scale 0.2 0.2 $ text "Press P to pause or unpause the game."
+  conf <- ask
+  let (x, y) = cupPosition conf
+  let w = snd $ cupSize conf
+  return $ Pictures $ writeInfo (x - 300, y + w) (-20) 
+    where
+      writeInfo (x, y) step = 
+        snd $ 
+        foldl (\(s, pics) str -> (s + step, pics ++ [translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
+          [ "Press P to pause"
+          , "or unpause the game."
+          , "Press Up Arrow to rotate." ]
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
@@ -84,7 +92,7 @@ drawSidebar = do
   return $ Pictures [pic]
   where
     drawNextFigure pos fig bs cp =
-      let np = (fst pos + 2, snd pos - 4) in
+      let np = (fst pos + 1, snd pos - 4) in
       drawFigure np fig >>= return
         . Pictures
         . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) $ scale 0.15 0.15 $ text "Prepare for this" ] )
@@ -105,6 +113,6 @@ drawWindow = do
   let fig = fallingFigure state
   figurePic <- drawFigure pos fig
   sidebarPic <- drawSidebar
-  debugPic <- drawDebug
+  helpPic <- drawHelp
   gridPic <- drawGrid
-  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, debugPic ]
+  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic ]
