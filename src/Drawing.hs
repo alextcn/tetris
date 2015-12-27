@@ -14,19 +14,20 @@ import Graphics.Gloss.Interface.Pure.Game
 
 
 toGlossColor Red = makeColorI 235 93 71 255
-toGlossColor Yellow = makeColorI 230 220 37 255
-toGlossColor Green = makeColorI 138 232 148 255
-toGlossColor Blue = makeColorI 138 189 254 255
+toGlossColor Yellow = makeColorI 230 220 95 255
+toGlossColor Green = makeColorI 90 232 148 255
+toGlossColor Blue = makeColorI 138 110 254 255
 toGlossColor Violet = makeColorI 153 93 181 255
 
 
 -- CONSTANT COLORS FOR DRAWING FUNCTIONS
 
-gridColor = makeColorI 200 200 200 255
+gridColor = makeColorI 255 255 255 40
 gridBlockColor = makeColorI 5 5 5 196
 blockColor = makeColorI 155 74 30 255
 overlayColor = makeColorI 10 10 10 200
 textColor = makeColorI 245 222 179 255
+cupColor = makeColorI 255 255 255 10
 
 -- DRAWING FUNCTIONS
 
@@ -82,7 +83,7 @@ drawCup = do
   sz <- fmap cupSize $ ask
   let height = snd sz
   let width = fst sz
-  return $ Pictures [drawEmptyGrid config, Line [ (x, y + height)
+  return $ Pictures [drawEmptyGrid config, Color cupColor $ Line [ (x, y + height)
                                                 , (x, y)
                                                 , (x + width, y)
                                                 , (x + width, y + height) ] ]

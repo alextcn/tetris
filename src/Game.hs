@@ -27,7 +27,7 @@ window :: Display
 window = InWindow "Tetris" defaultWindowSize defaultWindowPosition
 
 background :: Color
-background = (makeColorI 30 30 30 255)
+background = (makeColorI 77 57 75 255)
 
 -- | Frames per second.
 --    Can be used for hardness.
