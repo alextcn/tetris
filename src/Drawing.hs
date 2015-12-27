@@ -26,6 +26,7 @@ gridColor = makeColorI 200 200 200 255
 gridBlockColor = makeColorI 5 5 5 196
 blockColor = makeColorI 155 74 30 255
 overlayColor = makeColorI 10 10 10 200
+textColor = makeColorI 245 222 179 255
 
 -- DRAWING FUNCTIONS
 
@@ -40,7 +41,7 @@ drawHelp = do
     where
       writeInfo (x, y) step hard score = 
         snd $
-        foldl (\(s, pics) str -> (s + step, pics ++ [translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
+        foldl (\(s, pics) str -> (s + step, pics ++ [Color textColor $ translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
           [ "Press P to pause"
           , "or unpause the game."
           , "Press Up Arrow to rotate."
@@ -70,7 +71,7 @@ drawFigure c p f@(Figure _ _ bs) =
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
 drawGrid = do
   state <- get
-  pics <- mapM (`drawBlock` gridBlockColor) (getGridAsList state)
+  pics <- mapM (\(p, c) -> p `drawBlock` (toGlossColor c)) (getGridAsList state)
   return $ Pictures pics
 
 -- | Draws a cup figures are falling into (with empty grid)
@@ -113,10 +114,11 @@ drawSidebar = do
   return $ Pictures [pic]
   where
     drawNextFigure pos fig fColor bs cp =
-      let np = (fst pos + 1, snd pos - 4) in
+      let np = (fst pos + 2, snd pos - 4) in
       drawFigure fColor np fig >>= return
         . Pictures
-        . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) 
+        . ( : [ Color textColor
+              $ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) 
               $ scale 0.15 0.15 
               $ text "Prepare for this" ] )
 
