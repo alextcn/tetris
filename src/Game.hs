@@ -12,15 +12,15 @@ import Graphics.Gloss.Interface.Pure.Game
 
 runGame :: IO ()
 runGame = do
-  state <- initState
+  game <- initState
   play
-        window       -- Display mode.
-        background   -- Background color.
-        fps          -- Number of simulation steps to take for each second of real time.
-        state        -- The initial world.
-        render       -- A function to convert the world a picture.
-        handler      -- A function to handle input events.
-        update       -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
+    window         -- Display mode.
+    background     -- Background color.
+    (calcFps game) -- Number of simulation steps to take for each second of real time.
+    game           -- The initial world.
+    render         -- A function to convert the world a picture.
+    handler        -- A function to handle input events.
+    update         -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
 
 
 window :: Display
@@ -31,8 +31,8 @@ background = (makeColorI 170 170 170 255)
 
 -- | Frames per second.
 --    Can be used for hardness.
-fps :: Int
-fps = 3
+calcFps :: TetrisGame -> Int
+calcFps game = (+3) . fromEnum $ hardness game
 
 initState :: IO TetrisGame
 initState = runReaderT (initialState) defaultAppConfig
