@@ -11,6 +11,13 @@ import Control.Monad.Reader
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
+-- COLORS
+red = makeColorI 235 93 71 255
+yellow = makeColorI 230 220 37 255
+green = makeColorI 138 232 148 255
+blue = makeColorI 138 189 254 255
+violet = makeColorI 153 93 181 255
+
 -- DRAWING FUNCTIONS
 
 -- | Draws all help components
