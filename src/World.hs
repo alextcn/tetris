@@ -91,12 +91,16 @@ rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos w h fs grid hrd isPs)
   | otherwise = curTetrisGame
   
 
--- | Checks that the point belongs to the Grid and that it is free.
+-- | Checks that the point belongs to the Grid and that it is free
 goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
 goodCoords grid w h = all goodCoord
   where
     goodCoord (x,y) = x >= 0 && x < w && y >= 0 && isNothing (Map.lookup (x,y) grid)
 
+-- | Returns next figure
+getNextFigure :: TetrisGame -> Figure
+getNextFigure (Game _ _ _ _ _ fs _ _ _) = head fs    
+    
 getGridAsList :: TetrisGame -> [GridPosition]
 getGridAsList (Game _ _ _ _ _ _ grid _ _) = Map.keys grid
 

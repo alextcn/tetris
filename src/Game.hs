@@ -56,19 +56,31 @@ handler (EventKey (Char 'p') Down _ _) game
 
 -- | Handles "left" button
 handler (EventKey (SpecialKey KeyLeft) Down _ _) game
-  = shiftLeftFigure game
+  = case isPause game of
+      False -> shiftLeftFigure game
+      True -> game
 
 -- | Handles "right" button
 handler (EventKey (SpecialKey KeyRight) Down _ _) game
-  = shiftRightFigure game
+  = case isPause game of
+      False -> shiftRightFigure game
+      True -> game
 
 -- | Handles "up" button
 handler (EventKey (SpecialKey KeyUp) Down _ _) game
-  = rotateFigure game
+  = case isPause game of
+      False -> rotateFigure game
+      True -> game
 
 -- | Handles "up" button
 handler (EventKey (SpecialKey KeyDown) Down _ _) game
-  = shiftDownFigure game
+  = case isPause game of
+      False -> shiftDownFigure game
+      True -> game
+
+-- | Handles "esc" button
+handler (EventKey (SpecialKey KeyEsc) Down _ _) game
+  = error "close game" -- wow!
 
 
 -- | Handles the rest input
