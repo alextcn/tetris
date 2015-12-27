@@ -80,7 +80,7 @@ drawSidebar :: StateT TetrisGame (Reader AppConfig) Picture
 drawSidebar = do
   state <- get
   conf <- ask
-  pic <- drawNextFigure (gridSize conf) (head $ nextFigures state) (blockSize conf) (cupPosition conf)
+  pic <- drawNextFigure (gridSize conf) (getNextFigure conf) (blockSize conf) (cupPosition conf)
   return $ Pictures [pic]
   where
     drawNextFigure pos fig bs cp = 
