@@ -78,6 +78,10 @@ handler (EventKey (SpecialKey KeyDown) Down _ _) game
       False -> shiftDownFigure game
       True -> game
 
+-- | Handles "esc" button
+handler (EventKey (SpecialKey KeyEsc) Down _ _) game
+  = error "close game" -- wow!
+
 
 -- | Handles the rest input
 handler _ game = game
