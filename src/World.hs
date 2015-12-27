@@ -119,6 +119,8 @@ rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos w h fs grid hrd scr is
   | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd scr isPs go
   | otherwise = curTetrisGame
 
+resetGame :: TetrisGame -> TetrisGame
+resetGame Game {..} = Game (head nextFigures) startFalling startFalling width height (tail nextFigures) Map.empty Learning 0 False False
 
 -- | Checks that the point belongs to the Grid and that it is free
 goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
