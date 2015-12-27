@@ -1,4 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE RecordWildCards #-} 
 module World where
 
 import qualified Data.Map as Map
@@ -28,6 +29,7 @@ data TetrisGame = Game
   , grid            :: Grid
   , hardness        :: Hardness
   , isPause         :: Bool
+  , gameOver        :: Bool
   }
   deriving Show
 
@@ -39,7 +41,7 @@ initialState = do
   let fs = randomFigures gen
   let startPos = startPosition cfg
   return $ Game (head fs) startPos startPos (fst $ gridSize $ cfg)
-      (snd $ gridSize $ cfg) (tail fs) Map.empty Easy False
+                (snd $ gridSize $ cfg) (tail fs) Map.empty Easy False False
 
 -- | Real position in Grid
 getRealCoords :: Figure -> GridPosition -> [Block]
@@ -51,15 +53,17 @@ randomFigures gen = zipWith getFigures (randoms gen) (randoms gen)
 
 -- | Sets the currently falling figure from nextFigures
 nextFigureGame :: TetrisGame -> TetrisGame
-nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) = Game (head fs) spos spos w h (tail fs) updateGrid hrd isPs
+nextFigureGame Game {..} = Game (head nextFigures) startFalling startFalling width height 
+                                (tail nextFigures) updateGrid hardness isPause checkingGO
   where
-    updateGrid = burnFullLines $ foldl addToGrid grid (getRealCoords ff fpos)
+    updateGrid = burnFullLines $ foldl addToGrid grid (getRealCoords fallingFigure fallingPosition)
     addToGrid grid b = Map.insert b () grid
+    checkingGO = all (\(x,y) -> y < height) (getRealCoords fallingFigure fallingPosition)
     burnFullLines = Map.fromList
       . (`zip` repeat ())
       . concat 
       . zipWith (\num list -> map (\(x,y)->(x,num)) list) [0,1..]
-      . filter ((/=w) . length)
+      . filter ((/=width) . length)
       . groupBy (\(_,y1) (_,y2) -> y1 == y2)
       . sortBy (comparing snd)
       . Map.keys
@@ -67,27 +71,27 @@ nextFigureGame (Game ff fpos spos w h fs grid hrd isPs) = Game (head fs) spos sp
     
 -- | Shifts left a figure if able to
 shiftLeftFigure :: TetrisGame -> TetrisGame
-shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos w h fs grid hrd isPs)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs
+shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos w h fs grid hrd isPs go)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs go
   | otherwise = curTetrisGame
 
 
 -- | Shifts right a figure if able to
 shiftRightFigure :: TetrisGame -> TetrisGame
-shiftRightFigure curTetrisGame@(Game ff (shiftRight -> fpos) spos w h fs grid hrd isPs)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs
+shiftRightFigure curTetrisGame@(Game ff (shiftRight -> fpos) spos w h fs grid hrd isPs go)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs go
   | otherwise = curTetrisGame
 
 -- | Shifts down a figure if able to
 shiftDownFigure :: TetrisGame -> TetrisGame
-shiftDownFigure curTetrisGame@(Game ff (shiftDown -> fpos) spos w h fs grid hrd isPs)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs
+shiftDownFigure curTetrisGame@(Game ff (shiftDown -> fpos) spos w h fs grid hrd isPs go)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs go
   | otherwise = nextFigureGame curTetrisGame
   
 -- | Rotates a figure if able to
 rotateFigure :: TetrisGame -> TetrisGame
-rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos w h fs grid hrd isPs)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs
+rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos w h fs grid hrd isPs go)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos w h fs grid hrd isPs go
   | otherwise = curTetrisGame
   
 
@@ -99,10 +103,10 @@ goodCoords grid w h = all goodCoord
 
 -- | Returns next figure
 getNextFigure :: TetrisGame -> Figure
-getNextFigure (Game _ _ _ _ _ fs _ _ _) = head fs    
+getNextFigure (nextFigures -> fs) = head fs    
     
 getGridAsList :: TetrisGame -> [GridPosition]
-getGridAsList (Game _ _ _ _ _ _ grid _ _) = Map.keys grid
+getGridAsList (grid -> gr) = Map.keys gr
 
 shiftRight :: GridPosition -> GridPosition
 shiftRight = sumPair (1,0)
