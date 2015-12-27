@@ -8,15 +8,22 @@ import Util
 import Control.Monad.State
 import Control.Monad.Reader
 
-import Graphics.Gloss
-import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss hiding (red, yellow, green, blue)
+import Graphics.Gloss.Interface.Pure.Game hiding (red, yellow, green, blue)
 
 -- COLORS
+
 red = makeColorI 235 93 71 255
 yellow = makeColorI 230 220 37 255
 green = makeColorI 138 232 148 255
 blue = makeColorI 138 189 254 255
 violet = makeColorI 153 93 181 255
+
+-- CONSTANT COLORS FOR DRAWING FUNCTIONS
+
+gridColor = makeColorI 200 200 200 255
+blockColor = makeColorI 155 74 30 255
+overlayColor = makeColorI 10 10 10 200
 
 -- DRAWING FUNCTIONS
 
@@ -27,14 +34,16 @@ drawHelp = do
   conf <- ask
   let (x, y) = cupPosition conf
   let w = snd $ cupSize conf
-  return $ Pictures $ writeInfo (x - 300, y + w) (-20) 
+  return $ Pictures $ writeInfo (x - 300, y + w) (-20) (hardness state)
     where
-      writeInfo (x, y) step = 
-        snd $ 
+      writeInfo (x, y) step hard = 
+        snd $
         foldl (\(s, pics) str -> (s + step, pics ++ [translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
           [ "Press P to pause"
           , "or unpause the game."
-          , "Press Up Arrow to rotate." ]
+          , "Press Up Arrow to rotate."
+          , ""
+          , "Hardness : " ++ (show hard) ]
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
@@ -44,7 +53,7 @@ drawBlock block = do
   let sz = blockSize conf
   let bxp = fst cp + ((fromIntegral $ fst block) * sz)
   let byp = snd cp + ((fromIntegral $ snd block) * sz)
-  return $ Color (makeColorI 30 30 30 255) (lineLoop [ (bxp + 1, byp + 1)
+  return $ Color blockColor (polygon  [ (bxp + 1, byp + 1)
                                                      , (bxp + sz - 1, byp + 1)
                                                      , (bxp + sz - 1, byp + sz - 1)
                                                      , (bxp + 1, byp + sz - 1) ] )
@@ -81,7 +90,7 @@ drawEmptyGrid conf =
   let stepY = (snd $ cupSize conf) / fromIntegral gsY in  -- step y along vertical axis
   let gsX = fst $ gridSize conf in  -- Number of cells along horizontal axis
   let stepX = (fst $ cupSize conf) / fromIntegral gsX in  -- step x along horizontal axis
-  Color (makeColorI 200 200 200 255) $ Pictures [drawHorizontal cp gsY stepY, drawVertical cp gsX stepX]
+  Color gridColor $ Pictures [drawHorizontal cp gsY stepY, drawVertical cp gsX stepX]
     where
       drawHorizontal cp gsY stepY =
         let points = [snd cp + stepY * 1, snd cp + stepY * 2 .. snd cp + stepY * (fromIntegral gsY - 1)] in -- Y line coords along vertical axis
@@ -111,6 +120,23 @@ drawGame = do
   (x, y) <- fmap gamePosition $ ask
   return $ Pictures [ cupPic ]
 
+drawGameOver :: StateT TetrisGame (Reader AppConfig) Picture
+drawGameOver = do
+  conf <- ask
+  state <- get
+  let (px, py) = cupPosition conf
+  let (w, h) = cupSize conf
+  let (_winw, _winh) = windowSize conf
+  let (winw, winh) = (fromIntegral _winw, fromIntegral _winh)
+  let (cx, cy) = (px + w / 2, py + h / 2)
+  let overlay = Color overlayColor $ polygon [ (- winw, - winh)
+                                                          , (- winw,   winh)
+                                                          , (  winw,   winh)
+                                                          , (  winw, - winh) ]
+  return $ Pictures [ overlay
+                    , Color red $ translate (cx - 72) cy $ scale 0.2 0.2 $ text "Game Over"
+                    , Color white $ translate (cx - 72) (cy - 35) $ scale 0.15 0.15 $ text $ show $ 12345 ]
+
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture
 drawWindow = do
@@ -122,4 +148,8 @@ drawWindow = do
   sidebarPic <- drawSidebar
   helpPic <- drawHelp
   gridPic <- drawGrid
-  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic ]
+  gameOverOverlayPic <- drawGO $ gameOver state
+  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic, gameOverOverlayPic ]
+    where
+      drawGO True = drawGameOver
+      drawGO False = return $ Pictures [] 
