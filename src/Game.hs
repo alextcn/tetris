@@ -43,9 +43,10 @@ render game = runReader (evalStateT drawWindow game) defaultAppConfig
 
 -- | Updates game state by shifting current falling figure down
 update :: Float -> TetrisGame -> TetrisGame
-update _ game = case isPause game of
-                  False -> shiftDownFigure game
-                  True -> game
+update _ game = case (isPause game, gameOver game) of
+                  (False, False) -> shiftDownFigure game
+                  (_, True) -> game { isPause = True}
+                  (True, _) -> game
 
 -- | A function to handle input events.
 handler :: Event -> TetrisGame -> TetrisGame

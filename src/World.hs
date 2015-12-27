@@ -53,12 +53,14 @@ randomFigures gen = zipWith getFigures (randoms gen) (randoms gen)
 
 -- | Sets the currently falling figure from nextFigures
 nextFigureGame :: TetrisGame -> TetrisGame
-nextFigureGame Game {..} = Game (head nextFigures) startFalling startFalling width height 
-                                (tail nextFigures) updateGrid hardness isPause checkingGO
+nextFigureGame g@Game {..}
+  | checkingGO = g { gameOver = True }
+  | otherwise = Game (head nextFigures) startFalling startFalling width height 
+                (tail nextFigures) updateGrid hardness isPause checkingGO
+
   where
-    updateGrid = burnFullLines $ foldl addToGrid grid (getRealCoords fallingFigure fallingPosition)
-    addToGrid grid b = Map.insert b () grid
-    checkingGO = all (\(x,y) -> y < height) (getRealCoords fallingFigure fallingPosition)
+    updateGrid = burnFullLines $ foldl (\gr bl -> Map.insert bl () gr) grid (getRealCoords fallingFigure fallingPosition)
+    checkingGO = any (\(_,y) -> y >= height) (getRealCoords fallingFigure fallingPosition)
     burnFullLines = Map.fromList
       . (`zip` repeat ())
       . concat 

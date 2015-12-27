@@ -45,7 +45,7 @@ createAppConfig ws gms bs grs wp = AppConfig ws gms (cupSize bs grs) wp (gamePos
     gamePosition (gmw, gmh) = (-gmw/2, gmh/2)
     cupPosition gms@(gmw, gmh) = (-150,-200)--let (x,y) = gamePosition gms in
                                 --(x + gmw * 0.1, y - gmh * 0.1)
-    startPosition (grw, grh) = (div grw 2, grh)
+    startPosition (grw, grh) = (div grw 2, grh + 1)
 
 ------------------- Default values ------------------
 

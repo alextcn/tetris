@@ -49,9 +49,9 @@ getFigures Tank D3 = Figure Tank D3 [(0,0),(0,-1),(-1,0),(1,0)]
 getFigures Tank D4 = Figure Tank D4 [(0,0),(0,1),(0,-1),(-1,0)]
 
 getFigures Stick D1 = Figure Stick D1 [(0,0),(-1,0),(1,0),(2,0)]
-getFigures Stick D2 = Figure Stick D2 [(0,0),(0,-1),(0,-2),(0,1)]
+getFigures Stick D2 = Figure Stick D2 [(0,0),(0,-1),(0,1),(0,2)]
 getFigures Stick D3 = Figure Stick D3 [(0,0),(-1,0),(1,0),(2,0)]
-getFigures Stick D4 = Figure Stick D4 [(0,0),(0,-1),(0,-2),(0,1)]
+getFigures Stick D4 = Figure Stick D4 [(0,0),(0,-1),(0,1),(0,2)]
     
 getFigures Snake1 D1 = Figure Snake1 D1 [(0,0),(-1,0),(0,-1),(1,-1)]
 getFigures Snake1 D2 = Figure Snake1 D2 [(0,0),(0,-1),(1,0),(1,1)]
