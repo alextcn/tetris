@@ -15,6 +15,11 @@ import Util
 
 type Grid = Map.Map GridPosition ()
 
+oneLineScore = 100
+twoLinesScore = 300
+threeLinesScore = 700
+fourLinesScore = 1500
+
 data Hardness = Beginner | Learning | Average | Skilled | Masterful | Insane | Godlike
       deriving (Enum, Bounded, Show)
 
@@ -60,12 +65,26 @@ nextFigureGame g@Game {..}
                                               (tail nextFigures) updateGrid hardness score isPause checkingGO
                                               
   where
-    updateScore gnew = gnew { score = score + countOfBurns gnew g }
-    countOfBurns (length . getGridAsList -> countOld) (length . getGridAsList -> countNew) = toInteger $ div (countNew - countOld) width
+    updateScore gnew = gnew { score = score + (getScore $ countOfBurns g gnew) }
+    
+    
+    countOfBurns (length . getGridAsList -> countOld) (length . getGridAsList -> countNew) = div ((countOld + 4) - countNew) width
+    
+    -- Returns score based on count of burned lines.
+    getScore :: Int -> Integer
+    getScore 0 = 0
+    getScore 1 = 100
+    getScore 2 = 300
+    getScore 3 = 700
+    getScore 4 = 1500
+    
     updateHardness :: TetrisGame -> TetrisGame
-    updateHardness = undefined -- TODO: implement calculating new hardness
+    updateHardness = id -- TODO: implement calculating new hardness
+    
     updateGrid = burnFullLines $ foldl (\gr bl -> (Map.insert bl () gr)) grid (getRealCoords fallingFigure fallingPosition)
+    
     checkingGO = any (\(_,y) -> y >= height) (getRealCoords fallingFigure fallingPosition)
+    
     burnFullLines = listToGrid
       . concat
       . zipWith (\num list -> map (\(x,y)->(x,num)) list) [0,1..]
