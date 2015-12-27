@@ -34,16 +34,17 @@ drawHelp = do
   conf <- ask
   let (x, y) = cupPosition conf
   let w = snd $ cupSize conf
-  return $ Pictures $ writeInfo (x - 300, y + w) (-20) (hardness state)
+  return $ Pictures $ writeInfo (x - 300, y + w) (-20) (hardness state) (score state)
     where
-      writeInfo (x, y) step hard = 
+      writeInfo (x, y) step hard score = 
         snd $
         foldl (\(s, pics) str -> (s + step, pics ++ [translate x (y + s) $ scale 0.12 0.12 $ text str])) (step, [])
           [ "Press P to pause"
           , "or unpause the game."
           , "Press Up Arrow to rotate."
           , ""
-          , "Hardness : " ++ (show hard) ]
+          , "Hardness : " ++ (show hard)
+          , "Score " ++ (show score) ]
 
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> StateT TetrisGame (Reader AppConfig) Picture
@@ -135,7 +136,7 @@ drawGameOver = do
                                                           , (  winw, - winh) ]
   return $ Pictures [ overlay
                     , Color red $ translate (cx - 72) cy $ scale 0.2 0.2 $ text "Game Over"
-                    , Color white $ translate (cx - 72) (cy - 35) $ scale 0.15 0.15 $ text $ show $ 12345 ]
+                    , Color white $ translate (cx - 72) (cy - 35) $ scale 0.15 0.15 $ text $ show $ score state ]
 
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture
