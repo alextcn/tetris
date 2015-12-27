@@ -12,19 +12,20 @@ import Graphics.Gloss.Interface.Pure.Game
 
 runGame :: IO ()
 runGame = do
-  game <- initState
+  let cfg = defaultAppConfig
+  game <- initState cfg
   play
-    window         -- Display mode.
+    (window cfg)   -- Display mode.
     background     -- Background color.
     (calcFps game) -- Number of simulation steps to take for each second of real time.
     game           -- The initial world.
-    render         -- A function to convert the world a picture.
+    (render cfg)   -- A function to convert the world a picture.
     handler        -- A function to handle input events.
     update         -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
 
 
-window :: Display
-window = InWindow "Tetris" defaultWindowSize defaultWindowPosition
+window :: AppConfig -> Display
+window cfg = InWindow "Tetris" (windowSize cfg) (windowPosition cfg)
 
 background :: Color
 background = (makeColorI 29 31 33 255)
@@ -34,12 +35,12 @@ background = (makeColorI 29 31 33 255)
 calcFps :: TetrisGame -> Int
 calcFps game = (+3) . fromEnum $ hardness game
 
-initState :: IO TetrisGame
-initState = runReaderT (initialState) defaultAppConfig
+initState :: AppConfig -> IO TetrisGame
+initState = runReaderT (initialState)
 
 -- | Render function for game
-render :: TetrisGame -> Picture
-render game = runReader (evalStateT drawWindow game) defaultAppConfig
+render :: AppConfig -> TetrisGame -> Picture
+render cfg game = runReader (evalStateT drawWindow game) cfg
 
 -- | Updates game state by shifting current falling figure down
 update :: Float -> TetrisGame -> TetrisGame
