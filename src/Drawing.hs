@@ -62,9 +62,9 @@ drawBlock block color = do
                                       , (bxp + 1, byp + sz - 1) ] )
 
 -- | Draws falling figure of the game state
-drawFigure :: GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
-drawFigure p f@(Figure _ _ bs) = 
-  mapM (`drawBlock` gridBlockColor) (getRealCoords f p) >>= return . Pictures
+drawFigure :: Color -> GridPosition -> Figure -> StateT TetrisGame (Reader AppConfig) Picture
+drawFigure c p f@(Figure _ _ bs) = 
+  mapM ((flip drawBlock) c) (getRealCoords f p) >>= return . Pictures
 
 -- | Draws a figure on the grid
 drawGrid :: StateT TetrisGame (Reader AppConfig) Picture
@@ -108,12 +108,13 @@ drawSidebar :: StateT TetrisGame (Reader AppConfig) Picture
 drawSidebar = do
   state <- get
   conf <- ask
-  pic <- drawNextFigure (gridSize conf) (getNextFigure state) (blockSize conf) (cupPosition conf)
+  let fColor = toGlossColor $ head $ nextColors state
+  pic <- drawNextFigure (gridSize conf) (getNextFigure state) fColor (blockSize conf) (cupPosition conf)
   return $ Pictures [pic]
   where
-    drawNextFigure pos fig bs cp =
+    drawNextFigure pos fig fColor bs cp =
       let np = (fst pos + 1, snd pos - 4) in
-      drawFigure np fig >>= return
+      drawFigure fColor np fig >>= return
         . Pictures
         . ( : [ translate (fst cp + (fromIntegral $ fst np) * bs) (snd cp + (fromIntegral $ (snd np + 3)) * bs) 
               $ scale 0.15 0.15 
@@ -150,7 +151,8 @@ drawWindow = do
   state <- get
   let pos = fallingPosition state
   let fig = fallingFigure state
-  figurePic <- drawFigure pos fig
+  let fColor = toGlossColor $ fallingColor state
+  figurePic <- drawFigure fColor pos fig
   sidebarPic <- drawSidebar
   helpPic <- drawHelp
   gridPic <- drawGrid
