@@ -44,7 +44,7 @@ hardnessMod Godlike = 2
 
 
 background :: Color
-background = (makeColorI 29 31 33 255)
+background = (makeColorI 0 0 0 0)
 
 initState :: AppConfig -> IO TetrisGame
 initState = runReaderT (initialState)

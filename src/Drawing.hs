@@ -50,6 +50,14 @@ drawHelp = do
           , "Hardness : " ++ (show hard)
           , "Score " ++ (show score) ]
 
+drawLink :: StateT TetrisGame (Reader AppConfig) Picture
+drawLink = do
+  conf <- ask
+  let (winw, winh) = windowSize conf
+  let (x, y) = ((fromIntegral winw) / 2, (fromIntegral winh) / 2)
+  let link = Color textColor $ translate (-x + 5) (y - 20) $ scale 0.13 0.13 $ text "https://github.com/SkyA1ex/tetris"
+  return link
+
 -- | Draws a one basic block on the grid
 drawBlock :: Block -> Color -> StateT TetrisGame (Reader AppConfig) Picture
 drawBlock block color = do
@@ -163,9 +171,21 @@ drawPauseOverlay = do
   return $ Pictures [ overlay
                     , Color textColor $ translate (cx - 38) cy $ scale 0.2 0.2 $ text "Pause" ]
 
+drawBackground :: StateT TetrisGame (Reader AppConfig) Picture
+drawBackground = do
+  conf <- ask
+  let (winw, winh) = windowSize conf
+  let (x, y) = ((fromIntegral winw) / 2, (fromIntegral winh) / 2)
+  let overlay = Color backgroundColor $ polygon [ (- x, - y)
+                                                , (- x,   y)
+                                                , (  x,   y)
+                                                , (  x, - y) ]
+  return overlay                                                
+
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture
 drawWindow = do
+  backgroundPic <- drawBackground
   gamePic <- drawGame
   state <- get
   let pos = fallingPosition state
@@ -177,9 +197,12 @@ drawWindow = do
   gridPic <- drawGrid
   gameOverOverlayPic <- drawGO $ gameOver state
   pauseOverlayPic <- drawPO (isPause state) (gameOver state)
-  return $ Pictures [ gridPic, gamePic, figurePic, sidebarPic, helpPic, gameOverOverlayPic, pauseOverlayPic ]
+  linkPic <- drawL (isPause state)
+  return $ Pictures [ backgroundPic, gridPic, gamePic, figurePic, sidebarPic, helpPic, gameOverOverlayPic, pauseOverlayPic, linkPic ]
     where
       drawGO True = drawGameOver
       drawGO False = return $ Pictures []
       drawPO True False = drawPauseOverlay
       drawPO _ _ = return $ Pictures []
+      drawL True = drawLink
+      drawL False = return $ Pictures []
