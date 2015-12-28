@@ -1,3 +1,4 @@
+{-# LANGUAGE ViewPatterns #-}
 module Game (runGame) where
 
 import Config
@@ -9,6 +10,8 @@ import Control.Monad.State
 import Control.Monad.Reader
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
+import qualified Data.Map as Map
+import Data.Maybe
 
 runGame :: IO ()
 runGame = do
@@ -31,8 +34,9 @@ fps = 24
 
 -- | Hardness fraps per second * (1/fps)
 hardnessMod :: Hardness -> Integer
-hardnessMod Beginner = 24
-hardnessMod Average = 12
+hardnessMod Noob = 24
+hardnessMod Beginner = 12
+hardnessMod Average = 8
 hardnessMod Skilled = 6
 hardnessMod Masterful = 4
 hardnessMod Insane = 3
@@ -51,7 +55,7 @@ render cfg game = runReader (evalStateT drawWindow game) cfg
 
 -- | Updates game state by shifting current falling figure down
 update :: Float -> TetrisGame -> TetrisGame
-update _ game = case (isPause game, gameOver game) of
+update _ game = movingDown $ case (isPause game, gameOver game) of
                   (False, False) -> case (needUpdate) of
                                      True -> shiftDownFigure (game { frapsCounter = 0 })
                                      False -> game { frapsCounter = (frapsCounter game) + 1}
@@ -60,7 +64,8 @@ update _ game = case (isPause game, gameOver game) of
 
   where
     needUpdate = (==0) $ mod ((+1) $ frapsCounter game) (hardnessMod $ hardness game)
-
+    movingDown game = if (pressedKeyDown game && (not $ isPause game)) then (shiftDownFigure game) else game
+    
 -- | A function to handle input events.
 handler :: Event -> TetrisGame -> TetrisGame
 
@@ -72,29 +77,32 @@ handler (EventKey (Char 'p') Down _ _) game
 handler (EventKey (Char 'r') Down _ _) game
   = resetGame game
 
--- | Handles "left" button
+-- | Handles "left" button press
 handler (EventKey (SpecialKey KeyLeft) Down _ _) game
   = case isPause game of
       False -> shiftLeftFigure game
       True -> game
 
--- | Handles "right" button
+-- | Handles "right" button press
 handler (EventKey (SpecialKey KeyRight) Down _ _) game
   = case isPause game of
       False -> shiftRightFigure game
       True -> game
 
+-- | Handles "down" button press
+handler (EventKey (SpecialKey KeyDown) Down _ _) game
+  = game { pressedDown = True}
+
+-- | Handles "down" button up
+handler (EventKey (SpecialKey KeyDown) Up _ _) game
+  = game { pressedDown = False}  
+  
 -- | Handles "up" button
 handler (EventKey (SpecialKey KeyUp) Down _ _) game
   = case isPause game of
       False -> rotateFigure game
       True -> game
 
--- | Handles "up" button
-handler (EventKey (SpecialKey KeyDown) Down _ _) game
-  = case isPause game of
-      False -> shiftDownFigure game
-      True -> game
 
 -- | Handles "esc" button
 handler (EventKey (SpecialKey KeyEsc) Down _ _) game

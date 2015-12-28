@@ -15,14 +15,15 @@ import Util
 
 type Grid = Map.Map (GridPosition, GameColor) ()
 
-data Hardness = Beginner | Average | Skilled | Masterful | Insane | Godlike
+data Hardness = Noob | Beginner | Average | Skilled | Masterful | Insane | Godlike
       deriving (Enum, Bounded, Show)
 
-beginerBound = 0
-averageBound = 300
-skilledBound = 700
-masterfulBound = 1200
-insaneBound = 3000
+noobBound = 0
+beginnerBound = 300
+averageBound = 800
+skilledBound = 1400
+masterfulBound = 2200
+insaneBound = 3500
 godlikeBound = 5000
 
 -- COLORS
@@ -35,7 +36,11 @@ instance Random GameColor where
     random g = randomR (minBound, maxBound) g
     randomR (a,b) g = case randomR (fromEnum a, fromEnum b) g of
                         (r, g') -> (toEnum r, g')
-
+                        
+-- KEYS                        
+data Key = DownKey | LeftKey | RightKey
+  deriving (Enum, Bounded, Ord, Eq)
+                        
 -- | Data represents the state of the Tetris game
 data TetrisGame = Game
   { fallingFigure   :: Figure
@@ -52,6 +57,7 @@ data TetrisGame = Game
   , frapsCounter    :: Integer
   , isPause         :: Bool
   , gameOver        :: Bool
+  , pressedDown     :: Bool
   }
 
 -- | Initial state of the game
@@ -63,8 +69,9 @@ initialState = do
   let fc = randoms gen
   let startPos = startPosition cfg
   return $ Game (head fs) startPos startPos (head fc) (tail fc) (fst $ gridSize $ cfg)
-                (snd $ gridSize $ cfg) (tail fs) Map.empty Beginner 0 0 False False
-
+                (snd $ gridSize $ cfg) (tail fs) Map.empty Beginner 0 0 False False False
+                
+                
 -- | Real position in Grid
 getRealCoords :: Figure -> GridPosition -> [Block]
 getRealCoords (Figure _ _ bs) curPos = map (sumPair curPos) bs
@@ -78,7 +85,7 @@ nextFigureGame :: TetrisGame -> TetrisGame
 nextFigureGame g@Game {..}
   | checkingGO = g { gameOver = True }
   | otherwise = updateHardness $ updateScore $ Game (head nextFigures) startFalling startFalling (head nextColors) (tail nextColors)
-                                                    width height (tail nextFigures) updateGrid hardness score frapsCounter isPause checkingGO
+                                                    width height (tail nextFigures) updateGrid hardness score frapsCounter isPause checkingGO pressedDown
 
   where
     updateScore gnew = gnew { score = score + (getScore $ countOfBurns g gnew) }
@@ -95,10 +102,11 @@ nextFigureGame g@Game {..}
     getScore 4 = 1500
 
     updateHardness :: TetrisGame -> TetrisGame
-    updateHardness g@(Game _ _ _ _ _ _ _ _ _ _ scr _ _ _) = g { hardness = nextHardness scr }
+    updateHardness g@(Game _ _ _ _ _ _ _ _ _ _ scr _ _ _ _) = g { hardness = nextHardness scr }
 
     nextHardness :: Integer -> Hardness
     nextHardness scr
+      | scr < beginnerBound = Noob
       | scr < averageBound = Beginner
       | scr < skilledBound = Average
       | scr < masterfulBound = Skilled
@@ -121,32 +129,36 @@ nextFigureGame g@Game {..}
 
 -- | Shifts left a figure if able to
 shiftLeftFigure :: TetrisGame -> TetrisGame
-shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go
+shiftLeftFigure curTetrisGame@(Game ff (shiftLeft -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go km)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go km
   | otherwise = curTetrisGame
 
 
 -- | Shifts right a figure if able to
 shiftRightFigure :: TetrisGame -> TetrisGame
-shiftRightFigure curTetrisGame@(Game ff (shiftRight -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go
+shiftRightFigure curTetrisGame@(Game ff (shiftRight -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go km)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go km
   | otherwise = curTetrisGame
 
 -- | Shifts down a figure if able to
 shiftDownFigure :: TetrisGame -> TetrisGame
-shiftDownFigure curTetrisGame@(Game ff (shiftDown -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go
+shiftDownFigure curTetrisGame@(Game ff (shiftDown -> fpos) spos fc nc w h fs grid hrd scr fcnt isPs go km)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go km
   | otherwise = nextFigureGame curTetrisGame
 
 -- | Rotates a figure if able to
 rotateFigure :: TetrisGame -> TetrisGame
-rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos fc nc w h fs grid hrd scr fcnt isPs go)
-  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go
+rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos fc nc w h fs grid hrd scr fcnt isPs go km)
+  | goodCoords grid w h (getRealCoords ff fpos) = Game ff fpos spos fc nc w h fs grid hrd scr fcnt isPs go km
   | otherwise = curTetrisGame
 
 resetGame :: TetrisGame -> TetrisGame
 resetGame Game {..} = Game ((head . tail) nextFigures) startFalling startFalling ((head . tail) nextColors) ((tail . tail) nextColors)
-                           width height ((tail . tail) nextFigures) Map.empty Beginner 0 0 False False
+                           width height ((tail . tail) nextFigures) Map.empty Beginner 0 0 False False pressedDown
+
+                        
+pressedKeyDown :: TetrisGame -> Bool
+pressedKeyDown Game {..} = pressedDown
 
 -- | Checks that the point belongs to the Grid and that it is free
 goodCoords :: Grid -> Int -> Int -> [Block] -> Bool
