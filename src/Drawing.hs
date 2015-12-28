@@ -55,7 +55,7 @@ drawLink = do
   conf <- ask
   let (winw, winh) = windowSize conf
   let (x, y) = ((fromIntegral winw) / 2, (fromIntegral winh) / 2)
-  let link = Color textColor $ translate (-x + 5) (y - 20) $ scale 0.13 0.13 $ text "https://github.com/SkyA1ex/tetris"
+  let link = Color textColor $ translate (-x + 5) (y - 20) $ scale 0.10 0.10 $ text "https://github.com/SkyA1ex/tetris"
   return link
 
 -- | Draws a one basic block on the grid
@@ -180,7 +180,7 @@ drawBackground = do
                                                 , (- x,   y)
                                                 , (  x,   y)
                                                 , (  x, - y) ]
-  return overlay                                                
+  return overlay
 
 -- | Draws the whole window picture
 drawWindow :: StateT TetrisGame (Reader AppConfig) Picture
