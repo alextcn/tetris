@@ -37,10 +37,6 @@ instance Random GameColor where
     randomR (a,b) g = case randomR (fromEnum a, fromEnum b) g of
                         (r, g') -> (toEnum r, g')
                         
--- KEYS                        
-data Key = DownKey | LeftKey | RightKey
-  deriving (Enum, Bounded, Ord, Eq)
-                        
 -- | Data represents the state of the Tetris game
 data TetrisGame = Game
   { fallingFigure   :: Figure
@@ -69,7 +65,7 @@ initialState = do
   let fc = randoms gen
   let startPos = startPosition cfg
   return $ Game (head fs) startPos startPos (head fc) (tail fc) (fst $ gridSize $ cfg)
-                (snd $ gridSize $ cfg) (tail fs) Map.empty Beginner 0 0 False False False
+                (snd $ gridSize $ cfg) (tail fs) Map.empty minBound 0 0 False False False
                 
                 
 -- | Real position in Grid
@@ -154,7 +150,7 @@ rotateFigure curTetrisGame@(Game (rotate -> ff) fpos spos fc nc w h fs grid hrd 
 
 resetGame :: TetrisGame -> TetrisGame
 resetGame Game {..} = Game ((head . tail) nextFigures) startFalling startFalling ((head . tail) nextColors) ((tail . tail) nextColors)
-                           width height ((tail . tail) nextFigures) Map.empty Beginner 0 0 False False pressedDown
+                           width height ((tail . tail) nextFigures) Map.empty minBound 0 0 False False pressedDown
 
                         
 pressedKeyDown :: TetrisGame -> Bool

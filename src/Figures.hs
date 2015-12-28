@@ -41,7 +41,7 @@ rotate (Figure t (nextRotation -> r) _) = getFigures t r
 ------------------------ All Figures -------------------------
 
 getFigures :: FigureType -> Rotation -> Figure
-getFigures Cube r = Figure Cube r [(0,0),(0,1),(1,1),(1,0)]
+getFigures Cube r = Figure Cube r [(0,0),(0,1),(-1,1),(-1,0)]
 
 getFigures Tank D1 = Figure Tank D1 [(0,0),(0,1),(-1,0),(1,0)]
 getFigures Tank D2 = Figure Tank D2 [(0,0),(0,1),(0,-1),(1,0)]
