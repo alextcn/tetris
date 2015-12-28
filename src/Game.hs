@@ -17,19 +17,28 @@ runGame = do
   play
     (window cfg)   -- Display mode.
     background     -- Background color.
-    (calcFps game) -- Number of simulation steps to take for each second of real time.
+    SCM            -- Number of simulation steps to take for each second of real time.
     game           -- The initial world.
     (render cfg)   -- A function to convert the world a picture.
     handler        -- A function to handle input events.
     update         -- A function to step the world one iteration. It is passed the period of time (in seconds) needing to be advanced.
 
+<<<<<<< Updated upstream
 
 window :: AppConfig -> Display
 window cfg = InWindow "Tetris" (windowSize cfg) (windowPosition cfg)
+=======
+-- | Smallest common multiple
+SCM = 24
+    
+window :: Display
+window = InWindow "Tetris" defaultWindowSize defaultWindowPosition
+>>>>>>> Stashed changes
 
 background :: Color
 background = (makeColorI 29 31 33 255)
 
+<<<<<<< Updated upstream
 -- | Frames per second.
 --    Can be used for hardness.
 calcFps :: TetrisGame -> Int
@@ -37,6 +46,10 @@ calcFps game = (+3) . fromEnum $ hardness game
 
 initState :: AppConfig -> IO TetrisGame
 initState = runReaderT (initialState)
+=======
+initState :: IO TetrisGame
+initState = runReaderT (initialState) defaultAppConfig
+>>>>>>> Stashed changes
 
 -- | Render function for game
 render :: AppConfig -> TetrisGame -> Picture
