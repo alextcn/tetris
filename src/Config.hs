@@ -43,14 +43,14 @@ createAppConfig ws gms bs grs wp = AppConfig ws gms (cupSize bs grs) wp (gamePos
     cupSize :: BlockSize -> GridSize -> CupSize
     cupSize bs (grw, grh) = (bs * fromIntegral grw, bs * fromIntegral grh)
     gamePosition (gmw, gmh) = (-gmw/2, gmh/2)
-    cupPosition gms@(gmw, gmh) = (-150,-200)--let (x,y) = gamePosition gms in
+    cupPosition gms@(gmw, gmh) = (-97,-200)--let (x,y) = gamePosition gms in
                                 --(x + gmw * 0.1, y - gmh * 0.1)
-    startPosition (grw, grh) = (div grw 2, grh)
+    startPosition (grw, grh) = (div grw 2, grh + 1)
 
 ------------------- Default values ------------------
 
 defaultWindowSize :: WindowSize
-defaultWindowSize = (1024, 600)
+defaultWindowSize = (810, 600)
 
 defaultGameSize :: GameSize
 defaultGameSize = (500, 500)
