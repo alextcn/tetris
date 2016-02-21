@@ -1,11 +1,9 @@
 # Tetris
------------
 
 Haskell Tetris game implementation based on [gloss](https://hackage.haskell.org/package/gloss) library.
 
 
 ## Installation
------------
 
 1. Download and install [stack](https://github.com/commercialhaskell/stack).
 2. Download repository with `git clone git@github.com:SkyA1ex/tetris.git`
@@ -14,7 +12,6 @@ Haskell Tetris game implementation based on [gloss](https://hackage.haskell.org/
 5. Launch project with `stack exec tetris`. stack know where to find executable (`./stack-work`).
 
 ## Project structure
------------
 
 * `src/` directory contains source code files (each file is module).
 * `app/` directory must contains files to be executable. In our case there is only `main :: IO ()`
@@ -23,12 +20,10 @@ Haskell Tetris game implementation based on [gloss](https://hackage.haskell.org/
 * `stack.yaml` – project configuration file. This file specifies which packages are available to be used and which packages to include (`packages` property). `extra-deps` property specifies additional dependencies that are not in [LTS](https://www.stackage.org/lts-3.17).
 
 ## Git
------------
 
 Project is developed using simplified [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/). There are two main branches: `master` and `dev`. Both `dev` and `feature-[name]` branches (which are merges) used for development. `master` branch always have last release version of the game.
 
 ## Contributors
------------
 
 * [Ambartsumyan Vladislav](https://github.com/vladambartsumyan)
 * [Anton Ermolinsky](https://github.com/OQJAV)
@@ -36,7 +31,6 @@ Project is developed using simplified [A successful Git branching model](http://
 
 
 ## License
------------
 
     The MIT License
 
