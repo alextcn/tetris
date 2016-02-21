@@ -1,35 +1,63 @@
 # Tetris
+-----------
 
-### Развертывание окружения для разработки
-1. Скачать и установить [stack](https://github.com/commercialhaskell/stack).
-2. `git clone git@github.com:SkyA1ex/tetris.git`, `cd tetris`
-3. Настроить ghc. Для этого необходимо вызвать `stack setup`, которая либо найдет компилятор в переменной `PATH`, либо загрузит его в глобальную директорию stack (по-умолчанию `~./stack`).
-4. Собрать проект, вызвав `stack build`. Это необходимо делать каждый раз перед запуском.
-5. Запустить проект `stack exec tetris-exe`. stack знает, где лежит исполняемый файл (`./stack-work`) и вызвает его.
+Haskell Tetris game implementation based on [gloss](https://hackage.haskell.org/package/gloss) library.
 
-### Структура проекта
 
-* Директория `src/` содержит файлы исходного кода, которые будут представлять собой модули.
-* Директория `app/` должна содержать только файлы, которые будут исполняемыми. В нашем случае там будет только `main :: IO ()`
-* Директория `test/` нам точно не нужна)))
-* `tetris.cabal` – главный конфигурационный файл проекта, в нем прописываются зависимости, которые загружаются при вызове `stack build`.
-* `stack.yaml` – настройки проекта. `packages` указывает, какие пакеты собирать. В `extra-deps` добавляются дополнительные зависимости, которых нет в [LTS](https://www.stackage.org/lts-3.17). `resolver` указывает какой резолвер использовать, от этого зависит версия ghc и используемых библиотек, которые резолвер предоставляет.
+## Installation
+-----------
 
-### Подключение модулей
-В ходе разработки могут понадобиться новые библиотеки или модули, которые не распознаются по-умолчанию. Для этого необходимо добавть зависимость в используемый компонент в файле `tetris.cabal`. Например, подключив модуль `import Data.Text.IO`, нужно добавить `text` в `build-depends` для данного компонента `library`. 
-```
-library
-  hs-source-dirs:      src
-  exposed-modules:     Lib
-  build-depends:       base >= 4.7 && < 5
-                       -- This next line is the new one
-                     , text
-  default-language:    Haskell2010
-  ```
-Таким образом будет при сборке будет загружена добавленная библиотека из [LTS](https://www.stackage.org/lts-3.17).
-Может оказаться, что библиотеки в LTS нет, тогда необходимо дополнительно добавить в `extra-deps` в файл `stack.yaml`. Можно посмотреть как это работает на примере используемой в проекте графической библиотеки `gloss-1.9.4.1`.
+1. Download and install [stack](https://github.com/commercialhaskell/stack).
+2. Download repository with `git clone git@github.com:SkyA1ex/tetris.git`
+3. Setup ghc with `stack setup`. It will download the compiler if necessary in an isolated stack location (default `~/.stack`) that won't interfere with any system-level installations.
+4. Build project with `stack build`. You should call it every time you make changes.
+5. Launch project with `stack exec tetris`. stack know where to find executable (`./stack-work`).
 
-### Git
-В проекте используется [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/) ([перевод](http://habrahabr.ru/post/106912/)).
-Имеются две главные ветки `master` и `dev`. Разработка ведется в `dev`, либо в `feature-[name]` ветках, которые сливаются. В `master` всегда имеется работающая версия приложения.
+## Project structure
+-----------
 
+* `src/` directory contains source code files (each file is module).
+* `app/` directory must contains files to be executable. In our case there is only `main :: IO ()`
+* `test/` directory doesn't used.
+* `tetris.cabal` – package configuration file (each project can have multiple packages). This file specifies which packages are dependencies.
+* `stack.yaml` – project configuration file. This file specifies which packages are available to be used and which packages to include (`packages` property). `extra-deps` property specifies additional dependencies that are not in [LTS](https://www.stackage.org/lts-3.17).
+
+## Git
+-----------
+
+Project is developed using simplified [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/). There are two main branches: `master` and `dev`. Both `dev` and `feature-[name]` branches (which are merges) used for development. `master` branch always have last release version of the game.
+
+## Contributors
+-----------
+
+* [Ambartsumyan Vladislav](https://github.com/vladambartsumyan)
+* [Anton Ermolinsky](https://github.com/OQJAV)
+* [Alexander Tkachenko](skyalexx@gmail.com)
+
+
+## License
+-----------
+
+    The MIT License
+
+    Copyright (c) 2015-2016 Tetris project contributors
+
+    https://github.com/skya1ex/tetris/graphs/contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
